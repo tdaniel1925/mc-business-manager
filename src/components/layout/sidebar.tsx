@@ -36,7 +36,6 @@ const navigation = [
   { name: "Underwriting", href: "/underwriting", icon: ClipboardCheck },
   { name: "Collections", href: "/collections", icon: DollarSign },
   { name: "Brokers", href: "/brokers", icon: Users },
-  { name: "Marketing", href: "/marketing", icon: Megaphone },
 ];
 
 const marketingNavigation = [
