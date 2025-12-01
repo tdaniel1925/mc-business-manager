@@ -18,7 +18,11 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(taskkill /PID 13520 /F)",
-      "Bash(cmd //c \"taskkill /PID 13520 /F\")"
+      "Bash(cmd //c \"taskkill /PID 13520 /F\")",
+      "Bash(npx tsx:*)",
+      "Bash(taskkill /PID 36560 /F)",
+      "Bash(cmd //c \"taskkill /PID 36560 /F\")",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
