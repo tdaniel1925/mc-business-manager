@@ -1,0 +1,981 @@
+// MCA Underwriting System - Database Schema
+// Based on PRD v2.0 - December 2025
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// AUTHENTICATION & USER MANAGEMENT
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  password      String?
+  image         String?
+  role          UserRole  @default(SALES)
+  isActive      Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+
+  // Relationships
+  assignedDeals     Deal[]     @relation("AssignedUnderwriter")
+  createdDeals      Deal[]     @relation("CreatedBy")
+  assignedMerchants Merchant[] @relation("AssignedSalesRep")
+  auditLogs         AuditLog[]
+  notifications     Notification[]
+  comments          Comment[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum UserRole {
+  ADMIN
+  UNDERWRITER
+  SALES
+  COLLECTIONS
+  COMPLIANCE
+  EXECUTIVE
+  BROKER
+}
+
+// ============================================
+// MERCHANT & OWNER MANAGEMENT
+// ============================================
+
+model Merchant {
+  id               String   @id @default(cuid())
+  legalName        String
+  dbaName          String?
+  ein              String?  @unique
+  businessType     BusinessType
+  industryCode     String?
+  industryRiskTier IndustryRiskTier @default(B)
+
+  // Contact Information
+  phone            String?
+  email            String?
+  website          String?
+
+  // Address
+  address          String?
+  city             String?
+  state            String?
+  zipCode          String?
+
+  // Business Details
+  dateEstablished  DateTime?
+  timeInBusiness   Int?      // months
+  annualRevenue    Decimal?  @db.Decimal(15, 2)
+  monthlyRevenue   Decimal?  @db.Decimal(15, 2)
+  employeeCount    Int?
+
+  // Banking Information (encrypted in practice)
+  bankName         String?
+  routingNumber    String?
+  accountNumber    String?
+
+  // Status
+  status           MerchantStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  owners           Owner[]
+  deals            Deal[]
+  advances         Advance[]
+  documents        Document[]
+  uccFilings       UCCFiling[]
+  assignedSalesRep User?      @relation("AssignedSalesRep", fields: [salesRepId], references: [id])
+  salesRepId       String?
+
+  @@map("merchants")
+}
+
+model Owner {
+  id           String   @id @default(cuid())
+  merchantId   String
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  ssn          String?  // encrypted
+  dateOfBirth  DateTime?
+  ownership    Decimal  @db.Decimal(5, 2) // percentage
+  isPrimary    Boolean  @default(false)
+
+  // Address
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?
+
+  // Credit Information
+  ficoScore    Int?
+  creditPullDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  merchant     Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  creditReports CreditReport[]
+
+  @@map("owners")
+}
+
+enum BusinessType {
+  SOLE_PROPRIETORSHIP
+  LLC
+  CORPORATION
+  PARTNERSHIP
+  NONPROFIT
+  OTHER
+}
+
+enum MerchantStatus {
+  ACTIVE
+  INACTIVE
+  BLACKLISTED
+  PROSPECT
+}
+
+enum IndustryRiskTier {
+  A  // Low risk
+  B  // Moderate risk
+  C  // Higher risk
+  D  // High risk / Prohibited
+}
+
+// ============================================
+// CRM & PIPELINE MANAGEMENT
+// ============================================
+
+model Deal {
+  id                String      @id @default(cuid())
+  merchantId        String
+
+  // Deal Information
+  requestedAmount   Decimal     @db.Decimal(15, 2)
+  approvedAmount    Decimal?    @db.Decimal(15, 2)
+  factorRate        Decimal?    @db.Decimal(5, 4)
+  paybackAmount     Decimal?    @db.Decimal(15, 2)
+  termDays          Int?
+  dailyPayment      Decimal?    @db.Decimal(15, 2)
+  weeklyPayment     Decimal?    @db.Decimal(15, 2)
+
+  // Pipeline Stage
+  stage             DealStage   @default(NEW_LEAD)
+  stageChangedAt    DateTime    @default(now())
+
+  // Source & Tracking
+  source            LeadSource  @default(DIRECT)
+  brokerId          String?
+  commission        Decimal?    @db.Decimal(15, 2)
+  commissionRate    Decimal?    @db.Decimal(5, 4)
+
+  // Risk Assessment
+  paperGrade        PaperGrade?
+  riskScore         Int?        // 0-100
+  stackingDetected  Boolean     @default(false)
+  existingPositions Int         @default(0)
+
+  // Decision
+  decisionDate      DateTime?
+  decisionNotes     String?     @db.Text
+  declineReasons    String[]
+
+  // Timing
+  submittedAt       DateTime    @default(now())
+  fundedAt          DateTime?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relationships
+  merchant          Merchant    @relation(fields: [merchantId], references: [id])
+  broker            Broker?     @relation(fields: [brokerId], references: [id])
+  underwriter       User?       @relation("AssignedUnderwriter", fields: [underwriterId], references: [id])
+  underwriterId     String?
+  createdBy         User?       @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById       String?
+
+  documents         Document[]
+  bankAnalysis      BankAnalysis?
+  disclosures       Disclosure[]
+  contracts         Contract[]
+  advances          Advance[]
+  comments          Comment[]
+  stageHistory      DealStageHistory[]
+
+  @@index([stage])
+  @@index([merchantId])
+  @@index([brokerId])
+  @@map("deals")
+}
+
+model DealStageHistory {
+  id          String    @id @default(cuid())
+  dealId      String
+  fromStage   DealStage?
+  toStage     DealStage
+  changedAt   DateTime  @default(now())
+  changedBy   String?
+  notes       String?
+
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_stage_history")
+}
+
+enum DealStage {
+  NEW_LEAD
+  DOCS_REQUESTED
+  DOCS_RECEIVED
+  IN_UNDERWRITING
+  APPROVED
+  CONTRACT_SENT
+  CONTRACT_SIGNED
+  FUNDED
+  DECLINED
+  DEAD
+}
+
+enum LeadSource {
+  DIRECT
+  BROKER
+  REFERRAL
+  WEBSITE
+  EMAIL
+  IMPORT
+}
+
+enum PaperGrade {
+  A
+  B
+  C
+  D
+}
+
+// ============================================
+// BROKER/ISO MANAGEMENT
+// ============================================
+
+model Broker {
+  id              String        @id @default(cuid())
+  companyName     String
+  contactName     String
+  email           String        @unique
+  phone           String?
+
+  // Commission Structure
+  tier            BrokerTier    @default(STANDARD)
+  commissionRate  Decimal       @db.Decimal(5, 4) @default(0.10) // 10%
+
+  // Portal Access
+  portalEnabled   Boolean       @default(true)
+  apiKey          String?       @unique
+  whiteLabel      Boolean       @default(false)
+
+  // Status
+  status          BrokerStatus  @default(ACTIVE)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  deals           Deal[]
+  commissions     Commission[]
+
+  @@map("brokers")
+}
+
+model Commission {
+  id            String            @id @default(cuid())
+  brokerId      String
+  advanceId     String
+  amount        Decimal           @db.Decimal(15, 2)
+  rate          Decimal           @db.Decimal(5, 4)
+  status        CommissionStatus  @default(PENDING)
+
+  // Clawback tracking
+  clawbackEligible Boolean        @default(true)
+  clawbackDate     DateTime?
+  clawbackAmount   Decimal?        @db.Decimal(15, 2)
+
+  paidAt           DateTime?
+  paymentReference String?
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  broker        Broker            @relation(fields: [brokerId], references: [id])
+  advance       Advance           @relation(fields: [advanceId], references: [id])
+
+  @@map("commissions")
+}
+
+enum BrokerTier {
+  STANDARD   // 10%
+  PREFERRED  // 12%
+  PREMIUM    // 15%
+}
+
+enum BrokerStatus {
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  CLAWED_BACK
+}
+
+// ============================================
+// UNDERWRITING ENGINE
+// ============================================
+
+model BankAnalysis {
+  id                String   @id @default(cuid())
+  dealId            String   @unique
+
+  // Statement Period
+  periodStart       DateTime
+  periodEnd         DateTime
+  monthsAnalyzed    Int
+
+  // Balance Metrics
+  avgDailyBalance   Decimal  @db.Decimal(15, 2)
+  minBalance        Decimal  @db.Decimal(15, 2)
+  maxBalance        Decimal  @db.Decimal(15, 2)
+  endingBalance     Decimal  @db.Decimal(15, 2)
+
+  // Deposit Analysis
+  totalDeposits     Decimal  @db.Decimal(15, 2)
+  depositCount      Int
+  avgDeposit        Decimal  @db.Decimal(15, 2)
+  depositDaysCount  Int      // days with deposits
+
+  // NSF & Overdraft
+  nsfCount          Int      @default(0)
+  nsfAmount         Decimal  @db.Decimal(15, 2) @default(0)
+  overdraftCount    Int      @default(0)
+
+  // MCA Detection
+  detectedMCAPayments Json?   // Array of detected recurring ACH debits
+  estimatedDailyLoad  Decimal? @db.Decimal(15, 2)
+
+  // Revenue Trend
+  revenueTrend      RevenueTrend @default(STABLE)
+
+  // OCR Source
+  ocrProvider       String?
+  ocrConfidence     Decimal?  @db.Decimal(5, 4)
+  rawOcrData        Json?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  deal              Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("bank_analyses")
+}
+
+model CreditReport {
+  id              String   @id @default(cuid())
+  ownerId         String
+
+  // Credit Scores
+  ficoScore       Int?
+  vantageScore    Int?
+
+  // Credit Details
+  creditBureau    String?  // Experian, Equifax, TransUnion
+  pullDate        DateTime
+  reportReference String?
+
+  // Key Factors
+  openAccounts    Int?
+  totalDebt       Decimal? @db.Decimal(15, 2)
+  creditUtilization Decimal? @db.Decimal(5, 4)
+
+  // Negative Items
+  bankruptcies    Int      @default(0)
+  judgments       Int      @default(0)
+  liens           Int      @default(0)
+  collections     Int      @default(0)
+
+  // Raw Report
+  rawReportData   Json?
+
+  createdAt       DateTime @default(now())
+
+  owner           Owner    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@map("credit_reports")
+}
+
+enum RevenueTrend {
+  GROWING
+  STABLE
+  DECLINING
+}
+
+// ============================================
+// DOCUMENT MANAGEMENT
+// ============================================
+
+model Document {
+  id            String         @id @default(cuid())
+  merchantId    String?
+  dealId        String?
+
+  // File Information
+  fileName      String
+  fileType      String
+  fileSize      Int
+  mimeType      String
+  storageKey    String         // S3/Supabase key
+  storageUrl    String?
+
+  // Document Classification
+  documentType  DocumentType
+
+  // Status
+  status        DocumentStatus @default(PENDING)
+
+  // OCR Results
+  ocrProcessed  Boolean        @default(false)
+  ocrData       Json?
+
+  // Verification
+  verified      Boolean        @default(false)
+  verifiedAt    DateTime?
+  verifiedBy    String?
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  merchant      Merchant?      @relation(fields: [merchantId], references: [id])
+  deal          Deal?          @relation(fields: [dealId], references: [id])
+
+  @@map("documents")
+}
+
+enum DocumentType {
+  BANK_STATEMENT
+  APPLICATION
+  GOVERNMENT_ID
+  VOIDED_CHECK
+  CC_PROCESSING_STATEMENT
+  TAX_RETURN
+  BUSINESS_LICENSE
+  CONTRACT
+  DISCLOSURE
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REJECTED
+}
+
+// ============================================
+// COMPLIANCE & REGULATORY
+// ============================================
+
+model Disclosure {
+  id              String           @id @default(cuid())
+  dealId          String
+  state           String           // CA, NY, VA, UT
+
+  // Disclosure Details
+  disclosureType  DisclosureType
+  version         String           @default("1.0")
+
+  // Calculated Values
+  totalAdvance    Decimal          @db.Decimal(15, 2)
+  totalPayback    Decimal          @db.Decimal(15, 2)
+  financeCharge   Decimal          @db.Decimal(15, 2)
+  aprEquivalent   Decimal?         @db.Decimal(6, 4)
+
+  // Payment Schedule
+  paymentSchedule Json?
+
+  // Generated Document
+  documentUrl     String?
+  generatedAt     DateTime?
+
+  // Signature
+  signedAt        DateTime?
+  signatureId     String?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  deal            Deal             @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("disclosures")
+}
+
+model UCCFiling {
+  id              String        @id @default(cuid())
+  merchantId      String
+  advanceId       String?
+
+  // Filing Details
+  filingType      UCCFilingType
+  filingState     String
+  filingNumber    String?
+
+  // Status
+  status          UCCStatus     @default(PENDING)
+  filedAt         DateTime?
+  expiresAt       DateTime?
+
+  // Collateral Description
+  collateralDesc  String?       @db.Text
+
+  // Amendment/Continuation tracking
+  parentFilingId  String?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  merchant        Merchant      @relation(fields: [merchantId], references: [id])
+  advance         Advance?      @relation(fields: [advanceId], references: [id])
+  parentFiling    UCCFiling?    @relation("UCCAmendments", fields: [parentFilingId], references: [id])
+  amendments      UCCFiling[]   @relation("UCCAmendments")
+
+  @@map("ucc_filings")
+}
+
+enum DisclosureType {
+  CALIFORNIA_SB1235
+  NEW_YORK_SB5470
+  VIRGINIA
+  UTAH
+}
+
+enum UCCFilingType {
+  UCC1
+  UCC3_AMENDMENT
+  UCC3_CONTINUATION
+  UCC3_TERMINATION
+}
+
+enum UCCStatus {
+  PENDING
+  FILED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  TERMINATED
+}
+
+// ============================================
+// CONTRACTS & E-SIGNATURE
+// ============================================
+
+model Contract {
+  id              String          @id @default(cuid())
+  dealId          String
+
+  // Contract Details
+  contractType    ContractType
+  version         String          @default("1.0")
+
+  // Terms
+  advanceAmount   Decimal         @db.Decimal(15, 2)
+  paybackAmount   Decimal         @db.Decimal(15, 2)
+  factorRate      Decimal         @db.Decimal(5, 4)
+  termDays        Int
+  paymentMethod   PaymentMethod
+  paymentAmount   Decimal         @db.Decimal(15, 2)
+
+  // Document
+  documentUrl     String?
+  templateId      String?
+
+  // E-Signature
+  envelopeId      String?         // DocuSign envelope ID
+  signatureProvider String?
+
+  status          ContractStatus  @default(DRAFT)
+  sentAt          DateTime?
+  signedAt        DateTime?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  deal            Deal            @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  signatures      Signature[]
+
+  @@map("contracts")
+}
+
+model Signature {
+  id            String          @id @default(cuid())
+  contractId    String
+
+  signerName    String
+  signerEmail   String
+  signerRole    SignerRole
+
+  status        SignatureStatus @default(PENDING)
+  signedAt      DateTime?
+  ipAddress     String?
+
+  createdAt     DateTime        @default(now())
+
+  contract      Contract        @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("signatures")
+}
+
+enum ContractType {
+  MCA_AGREEMENT
+  PERSONAL_GUARANTEE
+  ACH_AUTHORIZATION
+  FULL_PACKAGE
+}
+
+enum PaymentMethod {
+  DAILY_ACH
+  WEEKLY_ACH
+  SPLIT_FUNDING
+}
+
+enum ContractStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PARTIALLY_SIGNED
+  COMPLETED
+  DECLINED
+  VOIDED
+  EXPIRED
+}
+
+enum SignerRole {
+  MERCHANT
+  GUARANTOR
+  FUNDER
+}
+
+enum SignatureStatus {
+  PENDING
+  SIGNED
+  DECLINED
+}
+
+// ============================================
+// PAYMENT PROCESSING
+// ============================================
+
+model Advance {
+  id                String         @id @default(cuid())
+  merchantId        String
+  dealId            String
+
+  // Advance Details
+  fundedAmount      Decimal        @db.Decimal(15, 2)
+  paybackAmount     Decimal        @db.Decimal(15, 2)
+  factorRate        Decimal        @db.Decimal(5, 4)
+
+  // Payment Schedule
+  termDays          Int
+  paymentMethod     PaymentMethod
+  paymentAmount     Decimal        @db.Decimal(15, 2)
+  paymentFrequency  PaymentFrequency @default(DAILY)
+  firstPaymentDate  DateTime
+
+  // Balance Tracking
+  totalCollected    Decimal        @db.Decimal(15, 2) @default(0)
+  remainingBalance  Decimal        @db.Decimal(15, 2)
+
+  // Status
+  status            AdvanceStatus  @default(PENDING_FUNDING)
+  fundedAt          DateTime?
+  completedAt       DateTime?
+
+  // Position
+  position          Int            @default(1) // 1st, 2nd, 3rd position
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  merchant          Merchant       @relation(fields: [merchantId], references: [id])
+  deal              Deal           @relation(fields: [dealId], references: [id])
+  payments          Payment[]
+  disbursements     Disbursement[]
+  commissions       Commission[]
+  uccFilings        UCCFiling[]
+
+  @@map("advances")
+}
+
+model Payment {
+  id              String         @id @default(cuid())
+  advanceId       String
+
+  // Payment Details
+  amount          Decimal        @db.Decimal(15, 2)
+  scheduledDate   DateTime
+  processedDate   DateTime?
+
+  // ACH Details
+  achBatchId      String?
+  achTraceNumber  String?
+
+  // Status
+  status          PaymentStatus  @default(SCHEDULED)
+  returnCode      String?
+  returnReason    String?
+
+  // Retry Logic
+  attemptCount    Int            @default(0)
+  nextRetryDate   DateTime?
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  advance         Advance        @relation(fields: [advanceId], references: [id])
+
+  @@index([advanceId])
+  @@index([scheduledDate])
+  @@map("payments")
+}
+
+model Disbursement {
+  id              String              @id @default(cuid())
+  advanceId       String
+
+  // Disbursement Details
+  amount          Decimal             @db.Decimal(15, 2)
+  method          DisbursementMethod
+
+  // Banking Details
+  bankName        String?
+  routingNumber   String?
+  accountNumber   String?
+
+  // ACH/Wire Details
+  referenceNumber String?
+
+  status          DisbursementStatus  @default(PENDING)
+  processedAt     DateTime?
+
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  advance         Advance             @relation(fields: [advanceId], references: [id])
+
+  @@map("disbursements")
+}
+
+enum PaymentFrequency {
+  DAILY
+  WEEKLY
+}
+
+enum AdvanceStatus {
+  PENDING_FUNDING
+  ACTIVE
+  CURRENT
+  DELINQUENT
+  DEFAULT
+  PAID_OFF
+  SETTLED
+  CHARGED_OFF
+}
+
+enum PaymentStatus {
+  SCHEDULED
+  PENDING
+  PROCESSING
+  COMPLETED
+  RETURNED
+  NSF
+  FAILED
+  CANCELLED
+}
+
+enum DisbursementMethod {
+  SAME_DAY_ACH
+  NEXT_DAY_ACH
+  WIRE
+  CHECK
+}
+
+enum DisbursementStatus {
+  PENDING
+  APPROVED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// ============================================
+// AUDIT & NOTIFICATIONS
+// ============================================
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  entityType  String
+  entityId    String
+  oldValues   Json?
+  newValues   Json?
+  ipAddress   String?
+  userAgent   String?
+
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+
+  type        NotificationType
+  title       String
+  message     String           @db.Text
+
+  read        Boolean          @default(false)
+  readAt      DateTime?
+
+  // Link to entity
+  entityType  String?
+  entityId    String?
+
+  createdAt   DateTime         @default(now())
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  dealId      String
+  userId      String
+
+  content     String   @db.Text
+  isInternal  Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("comments")
+}
+
+enum NotificationType {
+  DEAL_ASSIGNED
+  DEAL_STAGE_CHANGE
+  DOCUMENT_UPLOADED
+  DOCUMENT_VERIFIED
+  CONTRACT_SIGNED
+  PAYMENT_RECEIVED
+  PAYMENT_FAILED
+  SYSTEM
+}
+
+// ============================================
+// SYSTEM CONFIGURATION
+// ============================================
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  category  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  subject     String
+  htmlContent String   @db.Text
+  textContent String?  @db.Text
+  variables   String[] // List of available variables
+
+  isActive    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("email_templates")
+}
