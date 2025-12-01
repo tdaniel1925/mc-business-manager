@@ -12,7 +12,13 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(npm run db:seed:*)"
+      "Bash(npm run db:seed:*)",
+      "Bash(npm run dev:*)",
+      "Bash(cat:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill /PID 13520 /F)",
+      "Bash(cmd //c \"taskkill /PID 13520 /F\")"
     ],
     "deny": [],
     "ask": []

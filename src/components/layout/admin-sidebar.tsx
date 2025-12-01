@@ -5,33 +5,35 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
-  Users,
-  FileText,
-  Briefcase,
-  ClipboardCheck,
-  DollarSign,
-  Settings,
   Building2,
-  UserCircle,
+  Users,
+  CreditCard,
+  Settings,
+  Package,
+  FileText,
+  Shield,
   LogOut,
   ChevronLeft,
   Menu,
+  UserCircle,
+  Briefcase,
 } from "lucide-react";
 import { useSession } from "@/components/providers/session-provider";
 import { useState } from "react";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Pipeline", href: "/pipeline", icon: Briefcase },
-  { name: "Deals", href: "/deals", icon: FileText },
-  { name: "Merchants", href: "/merchants", icon: Building2 },
-  { name: "Underwriting", href: "/underwriting", icon: ClipboardCheck },
-  { name: "Collections", href: "/collections", icon: DollarSign },
-  { name: "Brokers", href: "/brokers", icon: Users },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Companies", href: "/admin/companies", icon: Building2 },
+  { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Accounts", href: "/admin/accounts", icon: Briefcase },
+  { name: "Plans", href: "/admin/plans", icon: Package },
+  { name: "Billing", href: "/admin/billing", icon: CreditCard },
+  { name: "Invoices", href: "/admin/invoices", icon: FileText },
+  { name: "Security", href: "/admin/security", icon: Shield },
+  { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useSession();
@@ -46,23 +48,23 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col h-screen bg-gray-900 text-white transition-all duration-300",
+        "flex flex-col h-screen bg-slate-900 text-white transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
+      <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Building2 className="w-5 h-5" />
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5" />
             </div>
-            <span className="font-semibold">MCA System</span>
+            <span className="font-semibold">Admin Panel</span>
           </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors"
         >
           {collapsed ? (
             <Menu className="w-5 h-5" />
@@ -83,8 +85,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                 isActive
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                  ? "bg-indigo-600 text-white"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
               )}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -94,19 +96,33 @@ export function Sidebar() {
         })}
       </nav>
 
+      {/* Back to App */}
+      <div className="px-2 py-2 border-t border-slate-800">
+        <Link
+          href="/dashboard"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors",
+            collapsed && "justify-center"
+          )}
+        >
+          <LayoutDashboard className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && <span>Back to App</span>}
+        </Link>
+      </div>
+
       {/* User section */}
-      <div className="border-t border-gray-800 p-4">
+      <div className="border-t border-slate-800 p-4">
         <div className={cn("flex items-center", collapsed ? "justify-center" : "gap-3")}>
-          <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
             <UserCircle className="w-5 h-5" />
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">
-                {user?.email?.split("@")[0] || "User"}
+                {user?.email?.split("@")[0] || "Admin"}
               </p>
-              <p className="text-xs text-gray-400 truncate">
-                {user?.email || "Guest"}
+              <p className="text-xs text-slate-400 truncate">
+                Platform Admin
               </p>
             </div>
           )}
@@ -114,7 +130,7 @@ export function Sidebar() {
         <button
           onClick={handleSignOut}
           className={cn(
-            "flex items-center gap-3 w-full px-3 py-2 mt-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors",
+            "flex items-center gap-3 w-full px-3 py-2 mt-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors",
             collapsed && "justify-center"
           )}
         >

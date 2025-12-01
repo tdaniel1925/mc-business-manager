@@ -11,19 +11,100 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("Seeding database...");
+  console.log("🌱 Seeding database...\n");
+
+  // Seed subscription plans
+  console.log("Creating subscription plans...");
+  const plans = await Promise.all([
+    prisma.plan.upsert({
+      where: { id: "plan_starter" },
+      update: {},
+      create: {
+        id: "plan_starter",
+        name: "Starter",
+        slug: "starter",
+        description: "Perfect for small funding companies just getting started",
+        monthlyPrice: 99,
+        yearlyPrice: 990,
+        maxUsers: 3,
+        maxMerchants: 100,
+        features: [
+          "Up to 3 users",
+          "100 merchant accounts",
+          "Basic underwriting tools",
+          "Email support",
+          "Standard reports",
+        ],
+        isActive: true,
+      },
+    }),
+    prisma.plan.upsert({
+      where: { id: "plan_professional" },
+      update: {},
+      create: {
+        id: "plan_professional",
+        name: "Professional",
+        slug: "professional",
+        description: "For growing companies with expanded needs",
+        monthlyPrice: 299,
+        yearlyPrice: 2990,
+        maxUsers: 10,
+        maxMerchants: 500,
+        features: [
+          "Up to 10 users",
+          "500 merchant accounts",
+          "Advanced underwriting",
+          "Priority email support",
+          "Advanced analytics",
+          "Custom deal stages",
+          "API access",
+        ],
+        isActive: true,
+      },
+    }),
+    prisma.plan.upsert({
+      where: { id: "plan_enterprise" },
+      update: {},
+      create: {
+        id: "plan_enterprise",
+        name: "Enterprise",
+        slug: "enterprise",
+        description: "Full-featured solution for large operations",
+        monthlyPrice: 799,
+        yearlyPrice: 7990,
+        maxUsers: -1, // Unlimited
+        maxMerchants: -1, // Unlimited
+        features: [
+          "Unlimited users",
+          "Unlimited merchant accounts",
+          "Full underwriting suite",
+          "24/7 phone support",
+          "Custom integrations",
+          "Dedicated account manager",
+          "White-label options",
+          "SLA guarantee",
+          "Custom reporting",
+        ],
+        isActive: true,
+      },
+    }),
+  ]);
+  console.log(`  ✓ Created ${plans.length} plans\n`);
+
+  console.log("Creating users...");
 
   // Create admin user
   const hashedPassword = await bcrypt.hash("admin123", 12);
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@mca.com" },
-    update: {},
+    update: { platformRole: "SUPER_ADMIN" },
     create: {
       email: "admin@mca.com",
       name: "Admin User",
       password: hashedPassword,
       role: "ADMIN",
+      platformRole: "SUPER_ADMIN",
       isActive: true,
     },
   });

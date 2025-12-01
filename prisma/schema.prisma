@@ -10,18 +10,294 @@ datasource db {
 }
 
 // ============================================
+// SAAS MULTI-TENANT STRUCTURE
+// ============================================
+
+// Platform-level roles (SaaS Admins)
+enum PlatformRole {
+  SUPER_ADMIN      // Full platform access
+  PLATFORM_ADMIN   // Platform management
+  PLATFORM_SUPPORT // Support access
+}
+
+// Company-level roles (Client employees)
+enum CompanyRole {
+  COMPANY_OWNER    // Full company access
+  COMPANY_ADMIN    // Company admin
+  MANAGER          // Department manager
+  UNDERWRITER      // Underwriting staff
+  SALES            // Sales staff
+  COLLECTIONS      // Collections staff
+  COMPLIANCE       // Compliance staff
+  VIEWER           // Read-only access
+}
+
+// SaaS Company (Client/Tenant)
+model Company {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique // URL-friendly identifier
+
+  // Company Details
+  legalName       String?
+  taxId           String?
+  phone           String?
+  email           String?
+  website         String?
+
+  // Address
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  country         String        @default("US")
+
+  // Branding
+  logoUrl         String?
+  primaryColor    String?       @default("#3B82F6")
+
+  // Subscription & Billing
+  subscriptionId  String?       @unique
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  // Status
+  status          CompanyStatus @default(TRIAL)
+  trialEndsAt     DateTime?
+
+  // Settings
+  settings        Json?         // Company-specific settings
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relationships
+  users           User[]
+  merchants       Merchant[]
+  brokers         Broker[]
+  apiKeys         ApiKey[]
+  invoices        Invoice[]
+  paymentMethods  PaymentMethod[]
+
+  @@map("companies")
+}
+
+enum CompanyStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+  PAST_DUE
+}
+
+// Subscription Plans
+model Plan {
+  id              String        @id @default(cuid())
+  name            String        // Starter, Professional, Enterprise
+  slug            String        @unique
+  description     String?
+
+  // Pricing
+  monthlyPrice    Decimal       @db.Decimal(10, 2)
+  yearlyPrice     Decimal       @db.Decimal(10, 2)
+
+  // Limits
+  maxUsers        Int           @default(5)
+  maxMerchants    Int           @default(100)
+  maxDealsPerMonth Int          @default(50)
+  maxStorageGb    Int           @default(10)
+
+  // Features
+  features        String[]      // Feature flags
+
+  isActive        Boolean       @default(true)
+  sortOrder       Int           @default(0)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  subscriptions   Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id              String              @id @default(cuid())
+  planId          String
+
+  // Billing Cycle
+  billingCycle    BillingCycle        @default(MONTHLY)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+
+  // Status
+  status          SubscriptionStatus  @default(ACTIVE)
+  cancelledAt     DateTime?
+  cancelAtPeriodEnd Boolean           @default(false)
+
+  // Payment Provider
+  stripeSubscriptionId String?        @unique
+  stripeCustomerId     String?
+
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  plan            Plan                @relation(fields: [planId], references: [id])
+  company         Company?
+
+  @@map("subscriptions")
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  UNPAID
+  TRIALING
+}
+
+// Payment Methods for Companies
+model PaymentMethod {
+  id              String              @id @default(cuid())
+  companyId       String
+
+  // Card Details (stored by Stripe, we keep reference)
+  type            PaymentMethodType   @default(CARD)
+  stripePaymentMethodId String?       @unique
+
+  // Display info (last 4 digits, brand)
+  last4           String?
+  brand           String?             // visa, mastercard, amex
+  expiryMonth     Int?
+  expiryYear      Int?
+
+  // Billing Address
+  billingName     String?
+  billingEmail    String?
+
+  isDefault       Boolean             @default(false)
+
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  company         Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("payment_methods")
+}
+
+enum PaymentMethodType {
+  CARD
+  BANK_ACCOUNT
+  ACH
+}
+
+// Invoices
+model Invoice {
+  id              String          @id @default(cuid())
+  companyId       String
+
+  // Invoice Details
+  invoiceNumber   String          @unique
+  amount          Decimal         @db.Decimal(10, 2)
+  tax             Decimal         @db.Decimal(10, 2) @default(0)
+  total           Decimal         @db.Decimal(10, 2)
+  currency        String          @default("USD")
+
+  // Period
+  periodStart     DateTime
+  periodEnd       DateTime
+
+  // Status
+  status          InvoiceStatus   @default(DRAFT)
+  dueDate         DateTime
+  paidAt          DateTime?
+
+  // Payment Provider
+  stripeInvoiceId String?         @unique
+
+  // PDF
+  pdfUrl          String?
+
+  // Line items stored as JSON
+  lineItems       Json?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  company         Company         @relation(fields: [companyId], references: [id])
+
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+// API Keys for companies
+model ApiKey {
+  id              String        @id @default(cuid())
+  companyId       String
+
+  name            String
+  key             String        @unique
+  keyHash         String        // Hashed version for security
+
+  // Permissions
+  permissions     String[]      // read, write, delete, etc.
+
+  // Rate Limiting
+  rateLimit       Int           @default(1000) // requests per hour
+
+  // Status
+  isActive        Boolean       @default(true)
+  lastUsedAt      DateTime?
+  expiresAt       DateTime?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  company         Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}
+
+// ============================================
 // AUTHENTICATION & USER MANAGEMENT
 // ============================================
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  password      String?
-  image         String?
-  role          UserRole  @default(SALES)
-  isActive      Boolean   @default(true)
+  id              String        @id @default(cuid())
+  email           String        @unique
+  emailVerified   DateTime?
+  name            String?
+  password        String?
+  image           String?
+  phone           String?
+
+  // Multi-tenant support
+  companyId       String?
+  company         Company?      @relation(fields: [companyId], references: [id])
+
+  // Role system - platform admin OR company employee
+  platformRole    PlatformRole? // Only set for SaaS admins
+  companyRole     CompanyRole?  // Only set for company employees
+
+  // Legacy role for backward compatibility
+  role            UserRole      @default(SALES)
+
+  isActive        Boolean       @default(true)
+  lastLoginAt     DateTime?
+
+  // Supabase Auth ID
+  supabaseId      String?       @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,8 +312,39 @@ model User {
   auditLogs         AuditLog[]
   notifications     Notification[]
   comments          Comment[]
+  invitationsSent   Invitation[] @relation("InvitedBy")
 
+  @@index([companyId])
   @@map("users")
+}
+
+// User Invitations
+model Invitation {
+  id            String        @id @default(cuid())
+  email         String
+  companyId     String?
+  companyRole   CompanyRole?
+  platformRole  PlatformRole?
+
+  token         String        @unique
+  expiresAt     DateTime
+
+  status        InvitationStatus @default(PENDING)
+  acceptedAt    DateTime?
+
+  invitedById   String?
+  invitedBy     User?         @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  createdAt     DateTime      @default(now())
+
+  @@map("invitations")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
 }
 
 model Account {
@@ -79,6 +386,7 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+// Legacy role enum - kept for backward compatibility
 enum UserRole {
   ADMIN
   UNDERWRITER
@@ -95,6 +403,11 @@ enum UserRole {
 
 model Merchant {
   id               String   @id @default(cuid())
+
+  // Multi-tenant support
+  companyId        String?
+  company          Company? @relation(fields: [companyId], references: [id])
+
   legalName        String
   dbaName          String?
   ein              String?  @unique
@@ -140,6 +453,7 @@ model Merchant {
   assignedSalesRep User?      @relation("AssignedSalesRep", fields: [salesRepId], references: [id])
   salesRepId       String?
 
+  @@index([companyId])
   @@map("merchants")
 }
 
@@ -313,6 +627,11 @@ enum PaperGrade {
 
 model Broker {
   id              String        @id @default(cuid())
+
+  // Multi-tenant support
+  companyId       String?
+  company         Company?      @relation(fields: [companyId], references: [id])
+
   companyName     String
   contactName     String
   email           String        @unique
@@ -336,6 +655,7 @@ model Broker {
   deals           Deal[]
   commissions     Commission[]
 
+  @@index([companyId])
   @@map("brokers")
 }
 
@@ -645,7 +965,7 @@ model Contract {
   paybackAmount   Decimal         @db.Decimal(15, 2)
   factorRate      Decimal         @db.Decimal(5, 4)
   termDays        Int
-  paymentMethod   PaymentMethod
+  paymentMethod   AdvancePaymentMethod
   paymentAmount   Decimal         @db.Decimal(15, 2)
 
   // Document
@@ -695,7 +1015,7 @@ enum ContractType {
   FULL_PACKAGE
 }
 
-enum PaymentMethod {
+enum AdvancePaymentMethod {
   DAILY_ACH
   WEEKLY_ACH
   SPLIT_FUNDING
@@ -740,7 +1060,7 @@ model Advance {
 
   // Payment Schedule
   termDays          Int
-  paymentMethod     PaymentMethod
+  paymentMethod     AdvancePaymentMethod
   paymentAmount     Decimal        @db.Decimal(15, 2)
   paymentFrequency  PaymentFrequency @default(DAILY)
   firstPaymentDate  DateTime
