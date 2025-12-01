@@ -22,7 +22,9 @@
       "Bash(npx tsx:*)",
       "Bash(taskkill /PID 36560 /F)",
       "Bash(cmd //c \"taskkill /PID 36560 /F\")",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd //c \"taskkill /PID 52592 /F\")"
     ],
     "deny": [],
     "ask": []

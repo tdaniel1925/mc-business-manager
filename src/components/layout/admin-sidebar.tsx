@@ -48,23 +48,23 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col h-screen bg-slate-900 text-white transition-all duration-300",
+        "flex flex-col h-screen bg-sidebar text-sidebar-foreground transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800">
+      <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5" />
+            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-secondary-foreground" />
             </div>
             <span className="font-semibold">Admin Panel</span>
           </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors"
+          className="p-1.5 hover:bg-sidebar-hover rounded-lg transition-colors"
         >
           {collapsed ? (
             <Menu className="w-5 h-5" />
@@ -85,8 +85,8 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
                 isActive
-                  ? "bg-indigo-600 text-white"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ? "bg-sidebar-active text-sidebar-active-foreground"
+                  : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground"
               )}
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -97,11 +97,11 @@ export function AdminSidebar() {
       </nav>
 
       {/* Back to App */}
-      <div className="px-2 py-2 border-t border-slate-800">
+      <div className="px-2 py-2 border-t border-sidebar-border">
         <Link
           href="/dashboard"
           className={cn(
-            "flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors",
+            "flex items-center gap-3 px-3 py-2 text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground rounded-lg transition-colors",
             collapsed && "justify-center"
           )}
         >
@@ -111,9 +111,9 @@ export function AdminSidebar() {
       </div>
 
       {/* User section */}
-      <div className="border-t border-slate-800 p-4">
+      <div className="border-t border-sidebar-border p-4">
         <div className={cn("flex items-center", collapsed ? "justify-center" : "gap-3")}>
-          <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-sidebar-hover rounded-full flex items-center justify-center flex-shrink-0">
             <UserCircle className="w-5 h-5" />
           </div>
           {!collapsed && (
@@ -121,7 +121,7 @@ export function AdminSidebar() {
               <p className="text-sm font-medium truncate">
                 {user?.email?.split("@")[0] || "Admin"}
               </p>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-sidebar-muted truncate">
                 Platform Admin
               </p>
             </div>
@@ -130,7 +130,7 @@ export function AdminSidebar() {
         <button
           onClick={handleSignOut}
           className={cn(
-            "flex items-center gap-3 w-full px-3 py-2 mt-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors",
+            "flex items-center gap-3 w-full px-3 py-2 mt-3 text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground rounded-lg transition-colors",
             collapsed && "justify-center"
           )}
         >

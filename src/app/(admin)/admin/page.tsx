@@ -89,17 +89,17 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total Companies</p>
-                  <p className="text-3xl font-bold">{stats.totalCompanies}</p>
+                  <p className="text-sm text-muted-foreground">Total Companies</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.totalCompanies}</p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <Building2 className="w-6 h-6 text-blue-600" />
+                <div className="p-3 bg-primary/10 rounded-full">
+                  <Building2 className="w-6 h-6 text-primary" />
                 </div>
               </div>
               <div className="mt-4 flex gap-2 text-sm">
-                <span className="text-green-600">{stats.activeCompanies} active</span>
-                <span className="text-gray-400">•</span>
-                <span className="text-yellow-600">{stats.trialCompanies} trial</span>
+                <span className="text-success">{stats.activeCompanies} active</span>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-warning">{stats.trialCompanies} trial</span>
               </div>
             </CardContent>
           </Card>
@@ -108,14 +108,14 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Total Users</p>
-                  <p className="text-3xl font-bold">{stats.totalUsers}</p>
+                  <p className="text-sm text-muted-foreground">Total Users</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.totalUsers}</p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <Users className="w-6 h-6 text-purple-600" />
+                <div className="p-3 bg-secondary rounded-full">
+                  <Users className="w-6 h-6 text-secondary-foreground" />
                 </div>
               </div>
-              <div className="mt-4 text-sm text-gray-500">
+              <div className="mt-4 text-sm text-muted-foreground">
                 {stats.platformAdmins} platform admins
               </div>
             </CardContent>
@@ -125,14 +125,14 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Monthly Revenue</p>
-                  <p className="text-3xl font-bold">{formatCurrency(stats.mrr)}</p>
+                  <p className="text-sm text-muted-foreground">Monthly Revenue</p>
+                  <p className="text-3xl font-bold text-foreground">{formatCurrency(stats.mrr)}</p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <DollarSign className="w-6 h-6 text-green-600" />
+                <div className="p-3 bg-success/10 rounded-full">
+                  <DollarSign className="w-6 h-6 text-success" />
                 </div>
               </div>
-              <div className="mt-4 flex items-center text-sm text-green-600">
+              <div className="mt-4 flex items-center text-sm text-success">
                 <TrendingUp className="w-4 h-4 mr-1" />
                 +{stats.growth}% from last month
               </div>
@@ -143,14 +143,14 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-500">Needs Attention</p>
-                  <p className="text-3xl font-bold">{stats.suspendedCompanies}</p>
+                  <p className="text-sm text-muted-foreground">Needs Attention</p>
+                  <p className="text-3xl font-bold text-foreground">{stats.suspendedCompanies}</p>
                 </div>
-                <div className="p-3 bg-red-100 rounded-full">
-                  <AlertCircle className="w-6 h-6 text-red-600" />
+                <div className="p-3 bg-destructive/10 rounded-full">
+                  <AlertCircle className="w-6 h-6 text-destructive" />
                 </div>
               </div>
-              <div className="mt-4 text-sm text-gray-500">
+              <div className="mt-4 text-sm text-muted-foreground">
                 Suspended or past due
               </div>
             </CardContent>
@@ -169,7 +169,7 @@ export default async function AdminDashboardPage() {
                 </CardTitle>
                 <Link
                   href="/admin/companies"
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-primary hover:text-primary/80"
                 >
                   View all
                 </Link>
@@ -178,17 +178,17 @@ export default async function AdminDashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {stats.recentCompanies.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">No companies yet</p>
+                  <p className="text-muted-foreground text-center py-4">No companies yet</p>
                 ) : (
                   stats.recentCompanies.map((company) => (
                     <Link
                       key={company.id}
                       href={`/admin/companies/${company.id}`}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="flex items-center justify-between p-3 bg-accent/50 rounded-lg hover:bg-accent transition-colors"
                     >
                       <div>
-                        <p className="font-medium">{company.name}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="font-medium text-foreground">{company.name}</p>
+                        <p className="text-sm text-muted-foreground">
                           {company._count.users} users
                         </p>
                       </div>
@@ -212,7 +212,7 @@ export default async function AdminDashboardPage() {
                 </CardTitle>
                 <Link
                   href="/admin/users"
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-primary hover:text-primary/80"
                 >
                   View all
                 </Link>
@@ -221,24 +221,24 @@ export default async function AdminDashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {stats.recentUsers.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">No users yet</p>
+                  <p className="text-muted-foreground text-center py-4">No users yet</p>
                 ) : (
                   stats.recentUsers.map((user) => (
                     <div
                       key={user.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-accent/50 rounded-lg"
                     >
                       <div>
-                        <p className="font-medium">{user.name || user.email}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="font-medium text-foreground">{user.name || user.email}</p>
+                        <p className="text-sm text-muted-foreground">
                           {user.company?.name || "Platform Admin"}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
                         {user.isActive ? (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
+                          <CheckCircle className="w-4 h-4 text-success" />
                         ) : (
-                          <Clock className="w-4 h-4 text-gray-400" />
+                          <Clock className="w-4 h-4 text-muted-foreground" />
                         )}
                       </div>
                     </div>
@@ -258,31 +258,31 @@ export default async function AdminDashboardPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link
                 href="/admin/companies/new"
-                className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                className="flex flex-col items-center p-4 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
               >
-                <Building2 className="w-8 h-8 text-blue-600 mb-2" />
-                <span className="text-sm font-medium">Add Company</span>
+                <Building2 className="w-8 h-8 text-primary mb-2" />
+                <span className="text-sm font-medium text-foreground">Add Company</span>
               </Link>
               <Link
                 href="/admin/users/new"
-                className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+                className="flex flex-col items-center p-4 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
               >
-                <Users className="w-8 h-8 text-purple-600 mb-2" />
-                <span className="text-sm font-medium">Add User</span>
+                <Users className="w-8 h-8 text-secondary-foreground mb-2" />
+                <span className="text-sm font-medium text-foreground">Add User</span>
               </Link>
               <Link
                 href="/admin/plans"
-                className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                className="flex flex-col items-center p-4 bg-success/10 rounded-lg hover:bg-success/20 transition-colors"
               >
-                <DollarSign className="w-8 h-8 text-green-600 mb-2" />
-                <span className="text-sm font-medium">Manage Plans</span>
+                <DollarSign className="w-8 h-8 text-success mb-2" />
+                <span className="text-sm font-medium text-foreground">Manage Plans</span>
               </Link>
               <Link
                 href="/admin/billing"
-                className="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+                className="flex flex-col items-center p-4 bg-warning/10 rounded-lg hover:bg-warning/20 transition-colors"
               >
-                <TrendingUp className="w-8 h-8 text-orange-600 mb-2" />
-                <span className="text-sm font-medium">View Billing</span>
+                <TrendingUp className="w-8 h-8 text-warning mb-2" />
+                <span className="text-sm font-medium text-foreground">View Billing</span>
               </Link>
             </div>
           </CardContent>

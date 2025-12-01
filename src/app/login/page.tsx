@@ -43,11 +43,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <Building2 className="w-6 h-6 text-white" />
+          <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+            <Building2 className="w-6 h-6 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl">MCA Underwriting System</CardTitle>
           <CardDescription>Sign in to your account to continue</CardDescription>
@@ -55,7 +55,7 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
                 {error}
               </div>
             )}

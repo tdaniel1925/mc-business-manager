@@ -4,7 +4,14 @@ import { PrismaClient } from "@prisma/client";
 
 const connectionString = process.env.DATABASE_URL!;
 
-const pool = new Pool({ connectionString });
+// Optimize connection pool for Supabase pooler
+const pool = new Pool({
+  connectionString,
+  max: 10, // Maximum connections in pool
+  idleTimeoutMillis: 30000, // Close idle connections after 30s
+  connectionTimeoutMillis: 10000, // Connection timeout 10s
+});
+
 const adapter = new PrismaPg(pool);
 
 const globalForPrisma = globalThis as unknown as {
@@ -15,10 +22,7 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
+    log: ["error"], // Only log errors for better performance
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

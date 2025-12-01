@@ -60,11 +60,11 @@ export default async function CompaniesPage() {
           <CardContent className="p-0">
             {companies.length === 0 ? (
               <div className="text-center py-12">
-                <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No companies yet
                 </h3>
-                <p className="text-gray-500 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Get started by adding your first client company
                 </p>
                 <Link href="/admin/companies/new">
@@ -92,8 +92,8 @@ export default async function CompaniesPage() {
                     <TableRow key={company.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{company.name}</p>
-                          <p className="text-sm text-gray-500">{company.email || company.slug}</p>
+                          <p className="font-medium text-foreground">{company.name}</p>
+                          <p className="text-sm text-muted-foreground">{company.email || company.slug}</p>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -103,7 +103,7 @@ export default async function CompaniesPage() {
                       </TableCell>
                       <TableCell>
                         {company.subscription?.plan?.name || (
-                          <span className="text-gray-400">No plan</span>
+                          <span className="text-muted-foreground">No plan</span>
                         )}
                       </TableCell>
                       <TableCell>{company._count.users}</TableCell>

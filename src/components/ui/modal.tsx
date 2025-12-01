@@ -57,23 +57,23 @@ export function Modal({
       />
       <div
         className={cn(
-          "relative z-50 w-full bg-white rounded-lg shadow-xl",
+          "relative z-50 w-full bg-card text-card-foreground rounded-lg shadow-xl border border-border",
           sizeClasses[size],
           className
         )}
       >
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div>
-            {title && <h2 className="text-lg font-semibold">{title}</h2>}
+            {title && <h2 className="text-lg font-semibold text-foreground">{title}</h2>}
             {description && (
-              <p className="text-sm text-gray-500 mt-1">{description}</p>
+              <p className="text-sm text-muted-foreground mt-1">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1 hover:bg-accent rounded-full transition-colors"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
         <div className="p-4">{children}</div>
