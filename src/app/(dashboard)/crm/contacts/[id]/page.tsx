@@ -231,7 +231,7 @@ export default async function ContactDetailPage({ params }: PageProps) {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Lead Source</span>
                   <span className="font-medium">
-                    {contact.leadSource?.replace(/_/g, " ") || "Unknown"}
+                    {contact.source?.replace(/_/g, " ") || "Unknown"}
                   </span>
                 </div>
               </CardContent>
