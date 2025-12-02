@@ -354,7 +354,7 @@ export default function LandingPage() {
             {/* Zapier */}
             <div className="group relative">
               <img
-                src="https://cdn.worldvectorlogo.com/logos/zapier-icon.svg"
+                src="https://logo.svgcdn.com/logos/zapier.svg"
                 alt="Zapier"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -363,7 +363,7 @@ export default function LandingPage() {
             {/* Make */}
             <div className="group relative">
               <img
-                src="https://cdn.worldvectorlogo.com/logos/make-2.svg"
+                src="https://seeklogo.com/images/M/make-logo-C8E045BFC8-seeklogo.com.png"
                 alt="Make"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -372,7 +372,7 @@ export default function LandingPage() {
             {/* n8n */}
             <div className="group relative">
               <img
-                src="https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.svg"
+                src="https://seeklogo.com/images/N/n8n-logo-B32BD0D428-seeklogo.com.png"
                 alt="n8n"
                 className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -413,7 +413,7 @@ export default function LandingPage() {
             {/* Notion */}
             <div className="group relative">
               <img
-                src="https://cdn.worldvectorlogo.com/logos/notion-2.svg"
+                src="https://logo.svgcdn.com/logos/notion.svg"
                 alt="Notion"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -440,7 +440,7 @@ export default function LandingPage() {
             {/* WordPress */}
             <div className="group relative">
               <img
-                src="https://cdn.worldvectorlogo.com/logos/wordpress-blue.svg"
+                src="https://seeklogo.com/images/W/wordpress-logo-FD5D29EF8C-seeklogo.com.png"
                 alt="WordPress"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
