@@ -97,7 +97,10 @@ export function Sidebar() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Building2 className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-semibold">MCA System</span>
+            <div>
+              <span className="font-semibold">MCA Manager</span>
+              <p className="text-[10px] text-sidebar-muted -mt-0.5">by BotMakers</p>
+            </div>
           </div>
         )}
         <button

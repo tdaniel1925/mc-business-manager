@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MCA Underwriting System",
+  title: "MCA Manager - by BotMakers",
   description: "Merchant Cash Advance Underwriting and Deal Management System",
 };
 

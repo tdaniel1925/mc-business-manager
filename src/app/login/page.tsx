@@ -49,7 +49,8 @@ export default function LoginPage() {
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
             <Building2 className="w-6 h-6 text-white" />
           </div>
-          <CardTitle className="text-2xl text-gray-900">MCA Underwriting System</CardTitle>
+          <CardTitle className="text-2xl text-gray-900">MCA Manager</CardTitle>
+          <p className="text-xs text-gray-400 mb-1">by BotMakers</p>
           <CardDescription className="text-gray-600">Sign in to your account to continue</CardDescription>
         </CardHeader>
         <CardContent>
@@ -85,6 +86,25 @@ export default function LoginPage() {
               Sign In
             </Button>
           </form>
+
+          {/* Demo Credentials */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm font-medium text-blue-800 mb-2">Demo Credentials</p>
+            <div className="text-sm text-blue-700 space-y-1">
+              <p><span className="font-medium">Email:</span> admin@mca.com</p>
+              <p><span className="font-medium">Password:</span> admin123</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail("admin@mca.com");
+                setPassword("admin123");
+              }}
+              className="mt-3 text-xs text-blue-600 hover:text-blue-800 underline"
+            >
+              Fill demo credentials
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>
