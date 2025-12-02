@@ -172,7 +172,7 @@ export default function LandingPage() {
               onClick={() => setIsCalModalOpen(true)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-gray-700"
             >
-              Let's Talk
+              Let&apos;s Talk
             </button>
           </div>
 
@@ -344,7 +344,7 @@ export default function LandingPage() {
                 onClick={() => setIsCalModalOpen(true)}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors"
               >
-                Let's Talk
+                Let&apos;s Talk
               </button>
             </div>
           </div>
@@ -373,7 +373,7 @@ export default function LandingPage() {
                 onClick={() => setIsCalModalOpen(true)}
                 className="hover:text-white transition-colors"
               >
-                Let's Talk
+                Let&apos;s Talk
               </button>
             </div>
 

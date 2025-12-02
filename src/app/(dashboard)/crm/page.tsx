@@ -232,7 +232,7 @@ export default async function CrmDashboardPage() {
                 href="/crm/tasks?filter=today"
                 className="text-sm text-primary hover:text-primary/80 mt-4 inline-flex items-center"
               >
-                View today's tasks
+                View today&apos;s tasks
                 <ArrowUpRight className="w-4 h-4 ml-1" />
               </Link>
             </CardContent>

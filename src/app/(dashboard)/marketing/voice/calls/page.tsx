@@ -2,13 +2,23 @@ import { Header } from "@/components/layout/header";
 import { Card, CardHeader, CardTitle, CardContent, Badge } from "@/components/ui";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui";
 import { Phone, Clock } from "lucide-react";
-import prisma from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
+interface VoiceCall {
+  id: string;
+  contactName?: string;
+  phoneNumber: string;
+  campaign?: { id: string; name: string };
+  outcome: string;
+  duration?: number;
+  createdAt: Date;
+  notes?: string;
+}
+
 export default async function VoiceCallsPage() {
   // Voice calls would be fetched from external voice AI service
-  const calls: any[] = [];
+  const calls: VoiceCall[] = [];
 
   const getOutcomeVariant = (outcome: string) => {
     switch (outcome) {

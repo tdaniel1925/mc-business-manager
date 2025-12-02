@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
+import { SocialPlatform } from "@prisma/client";
 
 async function getSocialAccounts() {
   return prisma.socialAccount.findMany({
@@ -35,11 +36,11 @@ const platformInfo: Record<string, { name: string; color: string; bgColor: strin
   YOUTUBE: { name: "YouTube", color: "text-red-600", bgColor: "bg-red-100" },
 };
 
-const availablePlatforms = [
-  { id: "FACEBOOK", name: "Facebook", description: "Connect your Facebook Page", icon: "F" },
-  { id: "INSTAGRAM", name: "Instagram", description: "Connect your Instagram Business account", icon: "I" },
-  { id: "LINKEDIN", name: "LinkedIn", description: "Connect your LinkedIn Company Page", icon: "in" },
-  { id: "TWITTER", name: "Twitter/X", description: "Connect your Twitter/X account", icon: "X" },
+const availablePlatforms: Array<{ id: SocialPlatform; name: string; description: string; icon: string }> = [
+  { id: SocialPlatform.FACEBOOK, name: "Facebook", description: "Connect your Facebook Page", icon: "F" },
+  { id: SocialPlatform.INSTAGRAM, name: "Instagram", description: "Connect your Instagram Business account", icon: "I" },
+  { id: SocialPlatform.LINKEDIN, name: "LinkedIn", description: "Connect your LinkedIn Company Page", icon: "in" },
+  { id: SocialPlatform.TWITTER, name: "Twitter/X", description: "Connect your Twitter/X account", icon: "X" },
 ];
 
 export default async function SocialPage() {
@@ -166,7 +167,7 @@ export default async function SocialPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {availablePlatforms.map((platform) => {
-                const isConnected = connectedPlatforms.includes(platform.id as any);
+                const isConnected = connectedPlatforms.includes(platform.id);
                 const info = platformInfo[platform.id];
 
                 return (
