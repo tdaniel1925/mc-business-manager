@@ -53,8 +53,8 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
     ? ((campaign.clicks / campaign.impressions) * 100).toFixed(2)
     : "0.00";
 
-  const cpc = campaign.clicks && campaign.spent
-    ? (Number(campaign.spent) / campaign.clicks).toFixed(2)
+  const cpc = campaign.clicks && campaign.spentAmount
+    ? (Number(campaign.spentAmount) / campaign.clicks).toFixed(2)
     : "0.00";
 
   const conversionRate = campaign.conversions && campaign.clicks
@@ -129,12 +129,12 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
                   </div>
                 )}
 
-                {campaign.spent && (
+                {campaign.spentAmount && (
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Amount Spent</p>
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-gray-400" />
-                      <span className="font-semibold text-red-600">{formatCurrency(Number(campaign.spent))}</span>
+                      <span className="font-semibold text-red-600">{formatCurrency(Number(campaign.spentAmount))}</span>
                     </div>
                   </div>
                 )}
