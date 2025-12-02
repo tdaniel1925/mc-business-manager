@@ -41,7 +41,7 @@ async function getSalesData() {
         select: {
           id: true,
           createdAt: true,
-          status: true,
+          stage: true,
           requestedAmount: true,
           merchant: { select: { legalName: true } },
         },
@@ -68,7 +68,7 @@ async function getSalesData() {
       .reduce((sum, c) => sum + Number(c.amount), 0);
 
     const totalFundedVolume = broker.deals
-      .filter((d) => d.status === "FUNDED")
+      .filter((d) => d.stage === "FUNDED")
       .reduce((sum, d) => sum + Number(d.requestedAmount), 0);
 
     const dealsThisMonth = broker.deals.filter(
@@ -105,7 +105,7 @@ async function getSalesData() {
 
   // Overall company metrics
   const totalActiveDeals = brokersWithMetrics.reduce(
-    (sum, b) => sum + b.deals.filter((d) => d.status !== "CLOSED_LOST").length,
+    (sum, b) => sum + b.deals.filter((d) => d.stage !== "DECLINED" && d.stage !== "DEAD").length,
     0
   );
   const totalFundedVolume = brokersWithMetrics.reduce(
