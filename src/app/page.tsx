@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -18,6 +21,7 @@ import {
   ArrowRight,
   Star,
 } from "lucide-react";
+import { CalModal } from "@/components/cal-modal";
 
 const features = [
   {
@@ -95,8 +99,12 @@ const stats = [
 ];
 
 export default function LandingPage() {
+  const [isCalModalOpen, setIsCalModalOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
+    <>
+      <CalModal isOpen={isCalModalOpen} onClose={() => setIsCalModalOpen(false)} />
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -157,15 +165,15 @@ export default function LandingPage() {
               href="/login"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors"
             >
-              Start Free Trial
+              Live Demo
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link
-              href="/login"
+            <button
+              onClick={() => setIsCalModalOpen(true)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors border border-gray-700"
             >
-              View Demo
-            </Link>
+              Let's Talk
+            </button>
           </div>
 
           <p className="text-sm text-gray-500 mt-6">
@@ -329,15 +337,15 @@ export default function LandingPage() {
                 href="/login"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-colors"
               >
-                Start Free Trial
+                Live Demo
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link
-                href="/login"
+              <button
+                onClick={() => setIsCalModalOpen(true)}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-colors"
               >
-                Schedule Demo
-              </Link>
+                Let's Talk
+              </button>
             </div>
           </div>
         </div>
@@ -359,11 +367,14 @@ export default function LandingPage() {
 
             <div className="flex items-center gap-8 text-gray-400">
               <Link href="/login" className="hover:text-white transition-colors">
-                Sign In
+                Live Demo
               </Link>
-              <Link href="/login" className="hover:text-white transition-colors">
-                Demo
-              </Link>
+              <button
+                onClick={() => setIsCalModalOpen(true)}
+                className="hover:text-white transition-colors"
+              >
+                Let's Talk
+              </button>
             </div>
 
             <p className="text-gray-500 text-sm">
@@ -372,6 +383,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
