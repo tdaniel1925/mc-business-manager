@@ -46,7 +46,7 @@ async function getDialerData() {
   const callLogs = await prisma.callLog.findMany({
     include: {
       lead: {
-        select: { id: true, firstName: true, lastName: true, company: true },
+        select: { id: true, contactName: true, businessName: true },
       },
       contact: {
         select: { id: true, firstName: true, lastName: true, company: true },
@@ -382,9 +382,13 @@ export default async function DialerPage() {
                   {data.callLogs.map((call) => {
                     const contact = call.lead || call.contact;
                     const contactName = contact
-                      ? `${contact.firstName} ${contact.lastName}`
+                      ? call.lead
+                        ? contact.contactName || "Unknown"
+                        : `${contact.firstName} ${contact.lastName}`
                       : "Unknown";
-                    const company = contact?.company || "";
+                    const company = call.lead
+                      ? contact?.businessName || ""
+                      : contact?.company || "";
 
                     return (
                       <TableRow key={call.id}>
