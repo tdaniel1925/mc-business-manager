@@ -85,6 +85,14 @@ model Company {
   contentPosts    ContentPost[]
   socialAccounts  SocialAccount[]
 
+  // CRM relationships
+  contacts        Contact[]
+  activities      Activity[]
+  crmTasks        CrmTask[]
+  emailMessages   EmailMessage[]
+  sequences       CommunicationSequence[]
+  savedFilters    SavedFilter[]
+
   @@map("companies")
 }
 
@@ -321,6 +329,13 @@ model User {
   comments          Comment[]
   invitationsSent   Invitation[] @relation("InvitedBy")
 
+  // CRM relationships
+  activities        Activity[]
+  tasksAssignedTo   CrmTask[]  @relation("TaskAssignedTo")
+  tasksAssignedBy   CrmTask[]  @relation("TaskAssignedBy")
+  emailsSent        EmailMessage[]
+  savedFilters      SavedFilter[]
+
   @@index([companyId])
   @@map("users")
 }
@@ -460,6 +475,9 @@ model Merchant {
   assignedSalesRep User?      @relation("AssignedSalesRep", fields: [salesRepId], references: [id])
   salesRepId       String?
 
+  // CRM relationships
+  contacts         Contact[]
+
   @@index([companyId])
   @@map("merchants")
 }
@@ -578,6 +596,9 @@ model Deal {
   advances          Advance[]
   comments          Comment[]
   stageHistory      DealStageHistory[]
+
+  // CRM relationships
+  dealContacts      DealContact[]
 
   @@index([stage])
   @@index([merchantId])
@@ -1913,4 +1934,533 @@ model ContentTemplate {
   updatedAt       DateTime        @updatedAt
 
   @@map("content_templates")
+}
+
+// ============================================
+// CRM SYSTEM - MCA INDUSTRY FOCUSED
+// ============================================
+
+// Contact Type - MCA specific roles
+enum ContactType {
+  BUSINESS_OWNER        // Primary decision maker
+  GUARANTOR             // Personal guarantor
+  ACCOUNTANT            // CPA/Bookkeeper
+  ATTORNEY              // Legal counsel
+  BROKER                // Referring ISO
+  REFERRAL_SOURCE       // Business referral
+  VENDOR                // Equipment/service provider
+  EMPLOYEE              // Business employee
+  OTHER
+}
+
+// Contact Status
+enum ContactStatus {
+  ACTIVE
+  INACTIVE
+  DO_NOT_CONTACT
+  BLACKLISTED
+}
+
+// CRM Contacts - People at businesses
+model Contact {
+  id              String          @id @default(cuid())
+  companyId       String          // Tenant
+
+  // Personal Info
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String?
+  mobile          String?
+  title           String?         // Job title
+
+  // Contact Classification
+  contactType     ContactType     @default(BUSINESS_OWNER)
+  status          ContactStatus   @default(ACTIVE)
+
+  // Business Association
+  merchantId      String?         // Link to merchant if exists
+  businessName    String?         // If no merchant record yet
+  industry        String?
+
+  // Address
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+
+  // MCA-Specific Fields
+  creditScore     Int?            // If known
+  ownershipPercent Decimal?       @db.Decimal(5, 2)
+  ssn             String?         // Encrypted
+  dateOfBirth     DateTime?
+
+  // Preferences
+  preferredContactMethod String?  // email, phone, sms
+  bestTimeToCall  String?         // morning, afternoon, evening
+  timezone        String?         @default("America/New_York")
+
+  // Communication Consent
+  emailOptIn      Boolean         @default(true)
+  smsOptIn        Boolean         @default(true)
+  callOptIn       Boolean         @default(true)
+  doNotCall       Boolean         @default(false)
+
+  // Lead Scoring
+  leadScore       Int             @default(0)
+  lastScoreUpdate DateTime?
+
+  // Social Profiles
+  linkedInUrl     String?
+  facebookUrl     String?
+  twitterHandle   String?
+
+  // Tags & Segmentation
+  tags            String[]
+
+  // Source Tracking
+  source          String?         // How we got this contact
+  sourceDetail    String?
+  referredBy      String?         // Contact ID who referred
+
+  // Last Interaction Tracking
+  lastContactedAt DateTime?
+  lastActivityAt  DateTime?
+  nextFollowUpAt  DateTime?
+
+  // Notes
+  notes           String?         @db.Text
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  createdById     String?
+
+  // Relationships
+  company         Company         @relation(fields: [companyId], references: [id])
+  merchant        Merchant?       @relation(fields: [merchantId], references: [id])
+  activities      Activity[]
+  tasks           CrmTask[]
+  emails          EmailMessage[]
+  deals           DealContact[]
+
+  @@index([companyId])
+  @@index([merchantId])
+  @@index([email])
+  @@index([phone])
+  @@map("crm_contacts")
+}
+
+// Activity Types - MCA workflow specific
+enum ActivityType {
+  CALL_OUTBOUND
+  CALL_INBOUND
+  CALL_MISSED
+  EMAIL_SENT
+  EMAIL_RECEIVED
+  EMAIL_OPENED
+  SMS_SENT
+  SMS_RECEIVED
+  MEETING_SCHEDULED
+  MEETING_COMPLETED
+  MEETING_CANCELLED
+  DOCUMENT_SENT
+  DOCUMENT_RECEIVED
+  DOCUMENT_SIGNED
+  APPLICATION_SUBMITTED
+  CREDIT_PULL
+  BANK_STATEMENT_RECEIVED
+  UNDERWRITING_STARTED
+  APPROVAL_ISSUED
+  CONTRACT_SENT
+  CONTRACT_SIGNED
+  FUNDING_COMPLETED
+  PAYMENT_RECEIVED
+  PAYMENT_MISSED
+  COLLECTION_CALL
+  NOTE_ADDED
+  TASK_CREATED
+  TASK_COMPLETED
+  STAGE_CHANGE
+  STATUS_CHANGE
+}
+
+// Activities - All interactions logged
+model Activity {
+  id              String          @id @default(cuid())
+  companyId       String
+
+  // Who/What this relates to
+  contactId       String?
+  merchantId      String?
+  dealId          String?
+  leadId          String?         // Marketing lead
+
+  // Activity Details
+  type            ActivityType
+  subject         String
+  description     String?         @db.Text
+
+  // Timing
+  activityDate    DateTime        @default(now())
+  duration        Int?            // minutes
+
+  // For Calls
+  callDirection   String?         // inbound/outbound
+  callOutcome     String?
+  callRecordingUrl String?
+
+  // For Emails
+  emailMessageId  String?
+
+  // For Meetings
+  meetingType     String?         // in-person, video, phone
+  meetingLocation String?
+  attendees       String[]
+
+  // Outcome & Follow-up
+  outcome         String?
+  nextSteps       String?         @db.Text
+  followUpDate    DateTime?
+
+  // User who logged activity
+  userId          String?
+
+  // Auto vs Manual
+  isAutoLogged    Boolean         @default(false)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relationships
+  company         Company         @relation(fields: [companyId], references: [id])
+  contact         Contact?        @relation(fields: [contactId], references: [id])
+  user            User?           @relation(fields: [userId], references: [id])
+
+  @@index([companyId])
+  @@index([contactId])
+  @@index([merchantId])
+  @@index([dealId])
+  @@index([activityDate])
+  @@map("crm_activities")
+}
+
+// Task Priority
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Task Status
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DEFERRED
+}
+
+// Task Category - MCA workflow stages
+enum TaskCategory {
+  FOLLOW_UP_CALL
+  DOCUMENT_REQUEST
+  DOCUMENT_REVIEW
+  CREDIT_REVIEW
+  UNDERWRITING
+  APPROVAL_REVIEW
+  CONTRACT_PREPARATION
+  CONTRACT_FOLLOW_UP
+  FUNDING
+  COLLECTION
+  RENEWAL
+  GENERAL
+}
+
+// CRM Tasks
+model CrmTask {
+  id              String          @id @default(cuid())
+  companyId       String
+
+  // Task Details
+  title           String
+  description     String?         @db.Text
+  category        TaskCategory    @default(GENERAL)
+
+  // Priority & Status
+  priority        TaskPriority    @default(MEDIUM)
+  status          TaskStatus      @default(PENDING)
+
+  // Timing
+  dueDate         DateTime?
+  dueTime         String?         // HH:MM
+  reminderDate    DateTime?
+  completedAt     DateTime?
+
+  // Assignment
+  assignedToId    String?
+  assignedById    String?
+
+  // Related Records
+  contactId       String?
+  merchantId      String?
+  dealId          String?
+
+  // Recurrence
+  isRecurring     Boolean         @default(false)
+  recurringPattern String?        // daily, weekly, monthly
+  recurringEndDate DateTime?
+
+  // Notes
+  completionNotes String?         @db.Text
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relationships
+  company         Company         @relation(fields: [companyId], references: [id])
+  contact         Contact?        @relation(fields: [contactId], references: [id])
+  assignedTo      User?           @relation("TaskAssignedTo", fields: [assignedToId], references: [id])
+  assignedBy      User?           @relation("TaskAssignedBy", fields: [assignedById], references: [id])
+
+  @@index([companyId])
+  @@index([assignedToId])
+  @@index([contactId])
+  @@index([dueDate])
+  @@index([status])
+  @@map("crm_tasks")
+}
+
+// Email Direction
+enum EmailDirection {
+  INBOUND
+  OUTBOUND
+}
+
+// Email Status
+enum EmailStatus {
+  DRAFT
+  QUEUED
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  FAILED
+  REPLIED
+}
+
+// Email Messages - CRM Email Tracking
+model EmailMessage {
+  id              String          @id @default(cuid())
+  companyId       String
+
+  // Message Details
+  direction       EmailDirection
+  subject         String
+  body            String          @db.Text
+  bodyHtml        String?         @db.Text
+
+  // Addresses
+  fromEmail       String
+  fromName        String?
+  toEmail         String
+  toName          String?
+  ccEmails        String[]
+  bccEmails       String[]
+
+  // Status & Tracking
+  status          EmailStatus     @default(DRAFT)
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  openedAt        DateTime?
+  clickedAt       DateTime?
+  repliedAt       DateTime?
+  bouncedAt       DateTime?
+
+  // Tracking Metadata
+  openCount       Int             @default(0)
+  clickCount      Int             @default(0)
+  linksClicked    String[]
+
+  // Thread Tracking
+  threadId        String?         // Group related emails
+  inReplyTo       String?         // Previous email ID
+  messageId       String?         // Email provider message ID
+
+  // Attachments
+  attachments     Json?           // {name, url, size, type}[]
+
+  // Related Records
+  contactId       String?
+  merchantId      String?
+  dealId          String?
+
+  // Template Used
+  templateId      String?
+
+  // User
+  userId          String?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relationships
+  company         Company         @relation(fields: [companyId], references: [id])
+  contact         Contact?        @relation(fields: [contactId], references: [id])
+  user            User?           @relation(fields: [userId], references: [id])
+
+  @@index([companyId])
+  @@index([contactId])
+  @@index([threadId])
+  @@index([status])
+  @@map("crm_emails")
+}
+
+// Deal-Contact Relationship (many-to-many with role)
+enum DealContactRole {
+  PRIMARY_CONTACT
+  DECISION_MAKER
+  GUARANTOR
+  ACCOUNTANT
+  BROKER
+  ATTORNEY
+  OTHER
+}
+
+model DealContact {
+  id              String          @id @default(cuid())
+  dealId          String
+  contactId       String
+  role            DealContactRole @default(PRIMARY_CONTACT)
+  isPrimary       Boolean         @default(false)
+
+  createdAt       DateTime        @default(now())
+
+  deal            Deal            @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  contact         Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([dealId, contactId])
+  @@map("deal_contacts")
+}
+
+// Communication Sequences (Drip Campaigns)
+enum SequenceStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+model CommunicationSequence {
+  id              String          @id @default(cuid())
+  companyId       String
+
+  name            String
+  description     String?
+  triggerEvent    String          // deal_stage_change, new_lead, etc.
+
+  isActive        Boolean         @default(true)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  company         Company         @relation(fields: [companyId], references: [id])
+  steps           SequenceStep[]
+  enrollments     SequenceEnrollment[]
+
+  @@index([companyId])
+  @@map("communication_sequences")
+}
+
+// Sequence Steps
+enum SequenceStepType {
+  EMAIL
+  SMS
+  TASK
+  WAIT
+  CONDITION
+}
+
+model SequenceStep {
+  id              String          @id @default(cuid())
+  sequenceId      String
+  stepOrder       Int
+
+  type            SequenceStepType
+  delayDays       Int             @default(0)
+  delayHours      Int             @default(0)
+
+  // For Email/SMS
+  templateId      String?
+  subject         String?
+  content         String?         @db.Text
+
+  // For Task
+  taskTitle       String?
+  taskCategory    TaskCategory?
+
+  // For Condition
+  conditionField  String?
+  conditionOperator String?
+  conditionValue  String?
+
+  isActive        Boolean         @default(true)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  sequence        CommunicationSequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+
+  @@index([sequenceId])
+  @@map("sequence_steps")
+}
+
+// Sequence Enrollments
+model SequenceEnrollment {
+  id              String          @id @default(cuid())
+  sequenceId      String
+  contactId       String?
+  merchantId      String?
+  dealId          String?
+
+  status          SequenceStatus  @default(ACTIVE)
+  currentStep     Int             @default(0)
+  nextStepAt      DateTime?
+
+  startedAt       DateTime        @default(now())
+  completedAt     DateTime?
+  pausedAt        DateTime?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  sequence        CommunicationSequence @relation(fields: [sequenceId], references: [id])
+
+  @@index([sequenceId])
+  @@index([status])
+  @@map("sequence_enrollments")
+}
+
+// Saved Filters / Smart Lists
+model SavedFilter {
+  id              String          @id @default(cuid())
+  companyId       String
+  userId          String
+
+  name            String
+  entityType      String          // contacts, merchants, deals
+  filterConfig    Json            // Filter criteria
+
+  isShared        Boolean         @default(false)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  company         Company         @relation(fields: [companyId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+
+  @@index([companyId])
+  @@index([userId])
+  @@map("saved_filters")
 }

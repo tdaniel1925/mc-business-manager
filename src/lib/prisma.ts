@@ -4,12 +4,12 @@ import { PrismaClient } from "@prisma/client";
 
 const connectionString = process.env.DATABASE_URL!;
 
-// Configure connection pool with longer timeouts for Supabase
+// Configure connection pool for Supabase transaction mode pooler
 const pool = new Pool({
   connectionString,
-  max: 5, // Limit connections to avoid hitting Supabase limits
-  idleTimeoutMillis: 60000,
-  connectionTimeoutMillis: 30000, // 30 second timeout
+  max: 2, // Very conservative limit for transaction mode
+  idleTimeoutMillis: 20000,
+  connectionTimeoutMillis: 30000,
 });
 
 const adapter = new PrismaPg(pool);

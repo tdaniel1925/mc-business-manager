@@ -24,6 +24,11 @@ import {
   UserPlus,
   ChevronDown,
   ChevronRight,
+  Contact,
+  ListTodo,
+  Activity,
+  Mail,
+  Calendar,
 } from "lucide-react";
 import { useSession } from "@/components/providers/session-provider";
 import { useState } from "react";
@@ -48,6 +53,15 @@ const marketingNavigation = [
   { name: "Leads", href: "/marketing/leads", icon: UserPlus },
 ];
 
+const crmNavigation = [
+  { name: "Overview", href: "/crm", icon: LayoutDashboard },
+  { name: "Contacts", href: "/crm/contacts", icon: Contact },
+  { name: "Activities", href: "/crm/activities", icon: Activity },
+  { name: "Tasks", href: "/crm/tasks", icon: ListTodo },
+  { name: "Emails", href: "/crm/emails", icon: Mail },
+  { name: "Calendar", href: "/crm/calendar", icon: Calendar },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -55,6 +69,9 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [marketingExpanded, setMarketingExpanded] = useState(
     pathname.startsWith("/marketing")
+  );
+  const [crmExpanded, setCrmExpanded] = useState(
+    pathname.startsWith("/crm")
   );
 
   const handleSignOut = async () => {
@@ -64,6 +81,7 @@ export function Sidebar() {
   };
 
   const isMarketingActive = pathname.startsWith("/marketing");
+  const isCrmActive = pathname.startsWith("/crm");
 
   return (
     <div
@@ -144,6 +162,55 @@ export function Sidebar() {
               {marketingNavigation.map((item) => {
                 const isActive = pathname === item.href ||
                   (item.href !== "/marketing" && pathname.startsWith(`${item.href}/`));
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm",
+                      isActive
+                        ? "bg-sidebar-active text-sidebar-active-foreground"
+                        : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground"
+                    )}
+                  >
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* CRM Section */}
+        <div className="pt-2">
+          <button
+            onClick={() => !collapsed && setCrmExpanded(!crmExpanded)}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 w-full rounded-lg transition-colors",
+              isCrmActive
+                ? "bg-sidebar-active/20 text-sidebar-foreground"
+                : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground"
+            )}
+          >
+            <Contact className="w-5 h-5 flex-shrink-0" />
+            {!collapsed && (
+              <>
+                <span className="flex-1 text-left">CRM</span>
+                {crmExpanded ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </>
+            )}
+          </button>
+
+          {!collapsed && crmExpanded && (
+            <div className="mt-1 ml-4 space-y-1">
+              {crmNavigation.map((item) => {
+                const isActive = pathname === item.href ||
+                  (item.href !== "/crm" && pathname.startsWith(`${item.href}/`));
                 return (
                   <Link
                     key={item.name}
