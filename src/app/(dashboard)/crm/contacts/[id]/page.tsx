@@ -40,7 +40,7 @@ async function getContact(id: string) {
         take: 10,
         include: { assignedTo: true },
       },
-      dealContacts: {
+      deals: {
         include: {
           deal: {
             include: { merchant: true },
@@ -51,7 +51,6 @@ async function getContact(id: string) {
         orderBy: { sentAt: "desc" },
         take: 5,
       },
-      createdByUser: true,
     },
   });
 
@@ -100,7 +99,7 @@ export default async function ContactDetailPage({ params }: PageProps) {
     <div className="flex flex-col h-full">
       <Header
         title={`${contact.firstName} ${contact.lastName}`}
-        subtitle={contact.company || contact.type.replace(/_/g, " ")}
+        subtitle={contact.businessName || contact.contactType.replace(/_/g, " ")}
         action={
           <div className="flex items-center gap-2">
             <Link href="/crm/contacts">
@@ -143,10 +142,10 @@ export default async function ContactDetailPage({ params }: PageProps) {
                     </h2>
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        contactTypeColors[contact.type] || "bg-gray-500/20 text-gray-500"
+                        contactTypeColors[contact.contactType] || "bg-gray-500/20 text-gray-500"
                       }`}
                     >
-                      {contact.type.replace(/_/g, " ")}
+                      {contact.contactType.replace(/_/g, " ")}
                     </span>
                   </div>
                 </div>
@@ -179,11 +178,11 @@ export default async function ContactDetailPage({ params }: PageProps) {
                       <span>{contact.mobile} (mobile)</span>
                     </a>
                   )}
-                  {contact.company && (
+                  {contact.businessName && (
                     <div className="flex items-center gap-3 text-muted-foreground">
                       <Building2 className="w-4 h-4" />
                       <div>
-                        <span>{contact.company}</span>
+                        <span>{contact.businessName}</span>
                         {contact.title && (
                           <span className="text-sm"> - {contact.title}</span>
                         )}
@@ -275,17 +274,17 @@ export default async function ContactDetailPage({ params }: PageProps) {
           {/* Right Column - Activity & Tasks */}
           <div className="lg:col-span-2 space-y-6">
             {/* Associated Deals */}
-            {contact.dealContacts.length > 0 && (
+            {contact.deals.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="w-5 h-5" />
-                    Associated Deals ({contact.dealContacts.length})
+                    Associated Deals ({contact.deals.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {contact.dealContacts.map((dc) => (
+                    {contact.deals.map((dc) => (
                       <Link
                         key={dc.id}
                         href={`/deals/${dc.deal.id}`}
@@ -486,7 +485,7 @@ export default async function ContactDetailPage({ params }: PageProps) {
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
                     <span>
-                      Created by {contact.createdByUser?.email?.split("@")[0] || "System"}
+                      Created by System
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const where: Record<string, unknown> = {};
 
     if (type) {
-      where.type = type;
+      where.contactType = type;
     }
 
     if (status) {
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         { lastName: { contains: search, mode: "insensitive" } },
         { email: { contains: search, mode: "insensitive" } },
         { phone: { contains: search } },
-        { company: { contains: search, mode: "insensitive" } },
+        { businessName: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           select: {
             activities: true,
             tasks: true,
-            dealContacts: true,
+            deals: true,
           },
         },
       },
@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
       ownershipPercent,
       dateOfBirth,
       ssn,
+      companyId,
     } = body;
 
     if (!firstName || !lastName || !type) {
@@ -103,27 +104,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // For now, use a default company ID - in production, this should come from the user's company
+    const tenantCompanyId = companyId || "default-company";
+
     const contact = await prisma.contact.create({
       data: {
+        companyId: tenantCompanyId,
         firstName,
         lastName,
         email: email || null,
         phone: phone || null,
         mobile: mobile || null,
-        type,
-        company: company || null,
+        contactType: type,
+        businessName: company || null,
         title: title || null,
         address: address || null,
         city: city || null,
         state: state || null,
         zipCode: zipCode || null,
-        leadSource: leadSource || null,
+        source: leadSource || null,
         notes: notes || null,
         creditScore: creditScore || null,
         ownershipPercent: ownershipPercent || null,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
         ssn: ssn || null,
-        createdBy: user.id,
+        createdById: user.id,
         status: "ACTIVE",
       },
     });

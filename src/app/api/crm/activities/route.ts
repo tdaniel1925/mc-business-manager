@@ -44,16 +44,6 @@ export async function GET(request: NextRequest) {
             lastName: true,
           },
         },
-        deal: {
-          select: {
-            id: true,
-            merchant: {
-              select: {
-                legalName: true,
-              },
-            },
-          },
-        },
         user: {
           select: {
             email: true,
@@ -92,34 +82,34 @@ export async function POST(request: NextRequest) {
       outcome,
       duration,
       contactId,
-      dealId,
-      scheduledAt,
-      completedAt,
+      companyId,
+      followUpDate,
     } = body;
 
-    if (!type) {
+    if (!type || !subject) {
       return NextResponse.json(
-        { error: "Activity type is required" },
+        { error: "Activity type and subject are required" },
         { status: 400 }
       );
     }
 
+    // For now, use a default company ID - in production, this should come from the user's company
+    const tenantCompanyId = companyId || "default-company";
+
     const activity = await prisma.activity.create({
       data: {
+        companyId: tenantCompanyId,
         type,
-        subject: subject || null,
+        subject,
         description: description || null,
         outcome: outcome || null,
         duration: duration ? parseInt(duration) : null,
         contactId: contactId || null,
-        dealId: dealId || null,
         userId: user.id,
-        scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
-        completedAt: completedAt ? new Date(completedAt) : null,
+        followUpDate: followUpDate ? new Date(followUpDate) : null,
       },
       include: {
         contact: true,
-        deal: true,
         user: true,
       },
     });
