@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const task = await prisma.task.findUnique({
+  const task = await prisma.crmTask.findUnique({
     where: { id },
     include: {
       assignedTo: {
