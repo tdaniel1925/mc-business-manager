@@ -224,14 +224,14 @@ export default async function UnderwritingPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-purple-100 rounded-full">
+                <div className="p-3 bg-purple-100 rounded-full flex-shrink-0">
                   <DollarSign className="w-6 h-6 text-purple-600" />
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xl font-bold truncate">
                     {formatCurrency(stats.avgRequestedAmount)}
                   </p>
-                  <p className="text-sm text-gray-500">Avg. Request</p>
+                  <p className="text-sm text-gray-500 whitespace-nowrap">Avg. Request</p>
                 </div>
               </div>
             </CardContent>
@@ -261,16 +261,16 @@ export default async function UnderwritingPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Merchant</TableHead>
-                      <TableHead>Requested</TableHead>
-                      <TableHead>FICO</TableHead>
-                      <TableHead>Revenue</TableHead>
-                      <TableHead>Grade</TableHead>
-                      <TableHead>Risk Score</TableHead>
-                      <TableHead>Docs</TableHead>
-                      <TableHead>Bank Analysis</TableHead>
-                      <TableHead>Assigned To</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="min-w-[180px]">Merchant</TableHead>
+                      <TableHead className="min-w-[100px]">Requested</TableHead>
+                      <TableHead className="min-w-[70px]">FICO</TableHead>
+                      <TableHead className="min-w-[100px]">Revenue</TableHead>
+                      <TableHead className="min-w-[80px]">Grade</TableHead>
+                      <TableHead className="min-w-[90px]">Risk Score</TableHead>
+                      <TableHead className="min-w-[110px]">Docs</TableHead>
+                      <TableHead className="min-w-[120px]">Bank Analysis</TableHead>
+                      <TableHead className="min-w-[120px]">Assigned To</TableHead>
+                      <TableHead className="text-right min-w-[140px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -291,15 +291,15 @@ export default async function UnderwritingPage() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="font-medium">
+                          <TableCell className="font-medium whitespace-nowrap">
                             {formatCurrency(Number(deal.requestedAmount))}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="whitespace-nowrap">
                             <span className={getFicoColor(fico)}>
                               {fico || "N/A"}
                             </span>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="whitespace-nowrap">
                             {deal.merchant.monthlyRevenue
                               ? formatCurrency(Number(deal.merchant.monthlyRevenue))
                               : "N/A"}
