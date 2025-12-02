@@ -40,7 +40,7 @@ export default async function BrokerDetailPage({ params }: { params: Promise<{ i
   return (
     <div className="flex flex-col h-full">
       <Header
-        title={broker.name}
+        title={broker.companyName}
         subtitle="Broker details and performance"
         action={
           <Link href="/brokers">
@@ -65,14 +65,12 @@ export default async function BrokerDetailPage({ params }: { params: Promise<{ i
                   <p className="text-sm text-gray-500">Company Name</p>
                   <p className="font-medium flex items-center gap-2">
                     <Building2 className="w-4 h-4" />
-                    {broker.name}
+                    {broker.companyName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Tier</p>
-                  <Badge variant={broker.tier === "PREMIUM" ? "success" : broker.tier === "PREFERRED" ? "info" : "default"}>
-                    {broker.tier}
-                  </Badge>
+                  <p className="text-sm text-gray-500">Contact Name</p>
+                  <p className="font-medium">{broker.contactName || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Email</p>
@@ -88,22 +86,20 @@ export default async function BrokerDetailPage({ params }: { params: Promise<{ i
                     {broker.phone || "N/A"}
                   </p>
                 </div>
-                {broker.address && (
-                  <div className="col-span-2">
-                    <p className="text-sm text-gray-500">Address</p>
-                    <p className="font-medium flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      {broker.address}
-                      {broker.city && `, ${broker.city}`}
-                      {broker.state && `, ${broker.state}`}
-                      {broker.zip && ` ${broker.zip}`}
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-gray-500">Tier</p>
+                  <Badge variant={broker.tier === "PREMIUM" ? "success" : broker.tier === "PREFERRED" ? "primary" : "default"}>
+                    {broker.tier}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Commission Rate</p>
+                  <p className="font-medium">{Number(broker.commissionRate) * 100}%</p>
+                </div>
                 <div>
                   <p className="text-sm text-gray-500">Status</p>
-                  <Badge variant={broker.isActive ? "success" : "danger"}>
-                    {broker.isActive ? "Active" : "Inactive"}
+                  <Badge variant={broker.status === "ACTIVE" ? "success" : broker.status === "SUSPENDED" ? "warning" : "danger"}>
+                    {broker.status}
                   </Badge>
                 </div>
                 <div>
