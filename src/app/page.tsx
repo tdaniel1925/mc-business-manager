@@ -320,146 +320,70 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Integrations Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Seamless Integrations
+      {/* Lead List Integration Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-900/30 via-cyan-900/20 to-gray-900/50 border-y border-cyan-500/20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-block px-4 py-2 bg-cyan-500/10 rounded-full border border-cyan-500/30 mb-6">
+              <span className="text-cyan-400 font-semibold text-sm uppercase tracking-wider">
+                Your Complete MCA Business in a Box
+              </span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
+              Pull Marketing Lists Directly<br />Into Your System
             </h2>
-            <p className="text-xl text-gray-400">
-              Connect with the tools you already use
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Connect with premium lead providers like <span className="text-cyan-400 font-semibold">Audience Lab</span> and <span className="text-cyan-400 font-semibold">Apollo</span> to automatically import fresh, qualified prospects directly into your MCA workflow.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8 items-center justify-items-center">
-            {/* HubSpot */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/hubspot-1.svg"
-                alt="HubSpot"
-                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Salesforce */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/salesforce-2.svg"
-                alt="Salesforce"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Zapier */}
-            <div className="group relative">
-              <img
-                src="https://logo.svgcdn.com/logos/zapier.svg"
-                alt="Zapier"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Make */}
-            <div className="group relative">
-              <img
-                src="https://seeklogo.com/images/M/make-logo-C8E045BFC8-seeklogo.com.png"
-                alt="Make"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* n8n */}
-            <div className="group relative">
-              <img
-                src="https://seeklogo.com/images/N/n8n-logo-B32BD0D428-seeklogo.com.png"
-                alt="n8n"
-                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* GoHighLevel */}
-            <div className="group relative">
-              <div className="h-8 px-4 py-1 bg-white/10 rounded flex items-center opacity-60 hover:opacity-100 transition-opacity">
-                <span className="text-white font-semibold text-sm">GoHighLevel</span>
+          <div className="grid md:grid-cols-3 gap-8 mt-16">
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+              <div className="w-14 h-14 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
+              <h3 className="text-xl font-bold text-white mb-3">Instant Lead Import</h3>
+              <p className="text-gray-400">
+                Automatically sync leads from multiple data providers directly into your CRM. No manual CSV uploads or data entry required.
+              </p>
             </div>
 
-            {/* Mailchimp */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/mailchimp-freddie-icon.svg"
-                alt="Mailchimp"
-                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Vapi */}
-            <div className="group relative">
-              <div className="h-8 px-4 py-1 bg-white/10 rounded flex items-center opacity-60 hover:opacity-100 transition-opacity">
-                <span className="text-white font-semibold text-sm">Vapi</span>
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+              <div className="w-14 h-14 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
+              <h3 className="text-xl font-bold text-white mb-3">Fully Customizable</h3>
+              <p className="text-gray-400">
+                Tailor every aspect of your MCA business workflow. From underwriting criteria to commission structures, it&apos;s your system, your way.
+              </p>
             </div>
 
-            {/* Twilio */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/twilio-1.svg"
-                alt="Twilio"
-                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Notion */}
-            <div className="group relative">
-              <img
-                src="https://logo.svgcdn.com/logos/notion.svg"
-                alt="Notion"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Slack */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/slack-new-logo.svg"
-                alt="Slack"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Discord */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/discord-6.svg"
-                alt="Discord"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* WordPress */}
-            <div className="group relative">
-              <img
-                src="https://seeklogo.com/images/W/wordpress-logo-FD5D29EF8C-seeklogo.com.png"
-                alt="WordPress"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
-            </div>
-
-            {/* Stripe */}
-            <div className="group relative">
-              <img
-                src="https://cdn.worldvectorlogo.com/logos/stripe-4.svg"
-                alt="Stripe"
-                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
+              <div className="w-14 h-14 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6">
+                <svg className="w-8 h-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">All-in-One Solution</h3>
+              <p className="text-gray-400">
+                CRM, underwriting, funding management, broker portals, marketing automation, and analytics - everything you need in one powerful platform.
+              </p>
             </div>
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-gray-400 text-sm">
-              Plus dozens more integrations through our REST API and webhooks
-            </p>
+          <div className="mt-16 text-center">
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full border border-cyan-500/30">
+              <div className="flex -space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full border-2 border-gray-900 flex items-center justify-center text-xs font-bold text-white">AL</div>
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full border-2 border-gray-900 flex items-center justify-center text-xs font-bold text-white">AP</div>
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full border-2 border-gray-900 flex items-center justify-center text-xs font-bold text-white">+</div>
+              </div>
+              <span className="text-cyan-300 font-medium">Connect with Audience Lab, Apollo, and more premium data providers</span>
+            </div>
           </div>
         </div>
       </section>
