@@ -7,15 +7,8 @@ import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function VoiceCallsPage() {
-  const calls = await prisma.voiceCall.findMany({
-    include: {
-      campaign: {
-        select: { id: true, name: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
+  // Voice calls would be fetched from external voice AI service
+  const calls: any[] = [];
 
   const getOutcomeVariant = (outcome: string) => {
     switch (outcome) {

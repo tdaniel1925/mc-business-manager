@@ -143,14 +143,15 @@ export default function NewVoiceCampaignPage() {
                     id="status"
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    options={[
+                      { value: "DRAFT", label: "Draft" },
+                      { value: "SCHEDULED", label: "Scheduled" },
+                      { value: "ACTIVE", label: "Active" },
+                      { value: "PAUSED", label: "Paused" },
+                      { value: "COMPLETED", label: "Completed" },
+                    ]}
                     required
-                  >
-                    <option value="DRAFT">Draft</option>
-                    <option value="SCHEDULED">Scheduled</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="PAUSED">Paused</option>
-                    <option value="COMPLETED">Completed</option>
-                  </Select>
+                  />
                 </div>
               </div>
 

@@ -11,12 +11,8 @@ export default async function VoiceCampaignDetailPage({ params }: { params: Prom
   const campaign = await prisma.voiceCampaign.findUnique({
     where: { id },
     include: {
-      calls: {
-        orderBy: { createdAt: "desc" },
-        take: 20,
-      },
-      _count: {
-        select: { calls: true },
+      campaign: {
+        select: { id: true, name: true, status: true },
       },
     },
   });
@@ -58,16 +54,16 @@ export default async function VoiceCampaignDetailPage({ params }: { params: Prom
     }
   };
 
-  // Calculate metrics
-  const totalCalls = campaign.calls.length;
-  const connectedCalls = campaign.calls.filter((c) => c.outcome === "CONNECTED").length;
-  const interestedCalls = campaign.calls.filter((c) => c.outcome === "INTERESTED").length;
-  const connectionRate = totalCalls > 0 ? ((connectedCalls / totalCalls) * 100).toFixed(1) : "0.0";
+  // Voice campaign metrics would come from external voice AI service
+  const totalCalls = 0;
+  const connectedCalls = 0;
+  const interestedCalls = 0;
+  const connectionRate = "0.0";
 
   return (
     <div className="flex flex-col h-full">
       <Header
-        title={campaign.name}
+        title={campaign.agentName}
         subtitle="Voice campaign details and performance"
         action={
           <Link href="/marketing/voice">
@@ -88,55 +84,63 @@ export default async function VoiceCampaignDetailPage({ params }: { params: Prom
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Campaign Name</p>
-                <p className="text-lg font-semibold">{campaign.name}</p>
+                <p className="text-sm text-gray-500 mb-1">Parent Campaign</p>
+                <Link href={`/marketing/campaigns/${campaign.campaign.id}`} className="text-lg font-semibold text-blue-600 hover:underline">
+                  {campaign.campaign.name}
+                </Link>
               </div>
 
-              {campaign.description && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Description</p>
-                  <p className="text-gray-700">{campaign.description}</p>
-                </div>
-              )}
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Agent Name</p>
+                <p className="text-lg font-semibold">{campaign.agentName}</p>
+              </div>
 
               <div>
-                <p className="text-sm text-gray-500 mb-1">Call Script</p>
-                <div className="p-4 bg-gray-50 rounded-lg border">
-                  <p className="text-sm whitespace-pre-wrap">{campaign.script}</p>
+                <p className="text-sm text-gray-500 mb-1">Script Template</p>
+                <div className="p-4 bg-gray-50 rounded-lg border max-h-64 overflow-auto">
+                  <p className="text-sm whitespace-pre-wrap">{campaign.scriptTemplate}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500 mb-1">System Prompt</p>
+                <div className="p-4 bg-gray-50 rounded-lg border max-h-64 overflow-auto">
+                  <p className="text-sm whitespace-pre-wrap">{campaign.systemPrompt}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Status</p>
-                  <Badge variant={getStatusVariant(campaign.status)}>
-                    {campaign.status}
+                  <p className="text-sm text-gray-500 mb-1">Campaign Status</p>
+                  <Badge variant={getStatusVariant(campaign.campaign.status)}>
+                    {campaign.campaign.status}
                   </Badge>
                 </div>
 
-                {campaign.targetList && (
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Target List</p>
-                    <p className="font-medium">{campaign.targetList}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Voice Type</p>
+                  <p className="font-medium">{campaign.voiceType}</p>
+                </div>
 
-                {campaign.scheduledFor && (
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Scheduled For</p>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">{formatDate(campaign.scheduledFor)}</span>
-                    </div>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Call Type</p>
+                  <p className="font-medium">{campaign.callType}</p>
+                </div>
 
-                {campaign.maxCallsPerDay && (
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Max Calls/Day</p>
-                    <p className="font-medium">{campaign.maxCallsPerDay}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Calls Per Day</p>
+                  <p className="font-medium">{campaign.callsPerDay}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Max Concurrent</p>
+                  <p className="font-medium">{campaign.maxConcurrentCalls}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Timezone</p>
+                  <p className="font-medium">{campaign.timezone}</p>
+                </div>
               </div>
 
               <div className="pt-4 border-t">
@@ -155,7 +159,7 @@ export default async function VoiceCampaignDetailPage({ params }: { params: Prom
                     <Phone className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{campaign._count.calls}</p>
+                    <p className="text-2xl font-bold">{totalCalls}</p>
                     <p className="text-sm text-gray-500">Total Calls</p>
                   </div>
                 </div>
@@ -192,53 +196,39 @@ export default async function VoiceCampaignDetailPage({ params }: { params: Prom
           </div>
         </div>
 
-        {/* Recent Calls */}
+        {/* Campaign Information */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Recent Calls</CardTitle>
-              <Link href="/marketing/voice/calls">
-                <Button variant="outline" size="sm">
-                  View All Calls
-                </Button>
-              </Link>
-            </div>
+            <CardTitle>Voice Campaign Configuration</CardTitle>
           </CardHeader>
           <CardContent>
-            {campaign.calls.length === 0 ? (
-              <p className="text-center py-8 text-gray-500">No calls made yet</p>
-            ) : (
-              <div className="space-y-3">
-                {campaign.calls.map((call) => (
-                  <div
-                    key={call.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                  >
-                    <div>
-                      <p className="font-medium">{call.contactName || "Unknown Contact"}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Phone className="w-3 h-3 text-gray-400" />
-                        <p className="text-sm text-gray-500">{call.phoneNumber}</p>
-                      </div>
-                      {call.duration && (
-                        <div className="flex items-center gap-2 mt-1">
-                          <Clock className="w-3 h-3 text-gray-400" />
-                          <p className="text-sm text-gray-500">{call.duration}s</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <Badge variant={getCallOutcomeVariant(call.outcome)}>
-                        {call.outcome.replace(/_/g, " ")}
-                      </Badge>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {formatDate(call.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Agent ID</p>
+                <p className="font-medium font-mono text-sm">{campaign.agentId}</p>
               </div>
-            )}
+              <div>
+                <p className="text-sm text-gray-500">Voice Type</p>
+                <p className="font-medium">{campaign.voiceType}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Call Type</p>
+                <p className="font-medium">{campaign.callType}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Max Concurrent Calls</p>
+                <p className="font-medium">{campaign.maxConcurrentCalls}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Calls Per Day</p>
+                <p className="font-medium">{campaign.callsPerDay}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Call Window</p>
+                <p className="font-medium">{campaign.callWindowStart} - {campaign.callWindowEnd}</p>
+              </div>
+            </div>
+            <p className="text-center py-8 text-gray-500">Voice campaign call data would be fetched from external AI voice service</p>
           </CardContent>
         </Card>
       </div>

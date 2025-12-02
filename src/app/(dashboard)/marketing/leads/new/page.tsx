@@ -141,16 +141,17 @@ export default function NewLeadPage() {
                     id="source"
                     value={formData.source}
                     onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                    options={[
+                      { value: "WEBSITE", label: "Website" },
+                      { value: "REFERRAL", label: "Referral" },
+                      { value: "COLD_CALL", label: "Cold Call" },
+                      { value: "EMAIL", label: "Email Campaign" },
+                      { value: "SOCIAL_MEDIA", label: "Social Media" },
+                      { value: "TRADE_SHOW", label: "Trade Show" },
+                      { value: "OTHER", label: "Other" },
+                    ]}
                     required
-                  >
-                    <option value="WEBSITE">Website</option>
-                    <option value="REFERRAL">Referral</option>
-                    <option value="COLD_CALL">Cold Call</option>
-                    <option value="EMAIL">Email Campaign</option>
-                    <option value="SOCIAL_MEDIA">Social Media</option>
-                    <option value="TRADE_SHOW">Trade Show</option>
-                    <option value="OTHER">Other</option>
-                  </Select>
+                  />
                 </div>
 
                 <div>
@@ -159,14 +160,15 @@ export default function NewLeadPage() {
                     id="status"
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    options={[
+                      { value: "NEW", label: "New" },
+                      { value: "CONTACTED", label: "Contacted" },
+                      { value: "QUALIFIED", label: "Qualified" },
+                      { value: "CONVERTED", label: "Converted" },
+                      { value: "UNQUALIFIED", label: "Unqualified" },
+                    ]}
                     required
-                  >
-                    <option value="NEW">New</option>
-                    <option value="CONTACTED">Contacted</option>
-                    <option value="QUALIFIED">Qualified</option>
-                    <option value="CONVERTED">Converted</option>
-                    <option value="UNQUALIFIED">Unqualified</option>
-                  </Select>
+                  />
                 </div>
 
                 <div className="md:col-span-2">

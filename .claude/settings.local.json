@@ -34,7 +34,8 @@
       "Bash(npx tsc:*)",
       "Bash(cmd //c \"taskkill /PID 84496 /F\")",
       "Bash(powershell -Command \"(Invoke-WebRequest -Uri ''http://localhost:2200'' -UseBasicParsing).StatusCode\")",
-      "Bash(del nul)"
+      "Bash(del nul)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []
