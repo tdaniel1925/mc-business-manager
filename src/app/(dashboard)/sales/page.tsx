@@ -38,7 +38,11 @@ async function getSalesData() {
     where: { status: "ACTIVE" },
     include: {
       deals: {
-        include: {
+        select: {
+          id: true,
+          createdAt: true,
+          status: true,
+          requestedAmount: true,
           merchant: { select: { legalName: true } },
         },
         orderBy: { createdAt: "desc" },
