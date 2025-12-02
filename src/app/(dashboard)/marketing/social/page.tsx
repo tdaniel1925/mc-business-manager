@@ -153,7 +153,7 @@ export default async function SocialPage() {
                 Upcoming Scheduled Posts
               </CardTitle>
               <div className="flex gap-2">
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                <Badge variant="info" className="bg-blue-50 text-blue-700 border-blue-200">
                   <Send className="w-3 h-3 mr-1" />
                   12 Scheduled
                 </Badge>
@@ -204,13 +204,13 @@ export default async function SocialPage() {
                       </div>
                       <div className="flex gap-1">
                         {post.platforms.map((platform) => (
-                          <Badge key={platform} variant="outline" className="text-xs">
+                          <Badge key={platform} variant="default" className="text-xs">
                             {platform}
                           </Badge>
                         ))}
                       </div>
                       {post.image && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="default" className="text-xs">
                           <Image className="w-3 h-3 mr-1" />
                           Image
                         </Badge>
@@ -237,7 +237,7 @@ export default async function SocialPage() {
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-5 h-5 text-blue-600" />
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge variant="success" className="bg-green-50 text-green-700 border-green-200">
                   +12.5%
                 </Badge>
               </div>
@@ -252,7 +252,7 @@ export default async function SocialPage() {
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                   <Users className="w-5 h-5 text-purple-600" />
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge variant="success" className="bg-green-50 text-green-700 border-green-200">
                   +8.2%
                 </Badge>
               </div>
@@ -267,7 +267,7 @@ export default async function SocialPage() {
                 <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
                   <BarChart3 className="w-5 h-5 text-cyan-600" />
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge variant="success" className="bg-green-50 text-green-700 border-green-200">
                   +15.8%
                 </Badge>
               </div>
@@ -282,7 +282,7 @@ export default async function SocialPage() {
                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-green-600" />
                 </div>
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                <Badge variant="info" className="bg-blue-50 text-blue-700 border-blue-200">
                   AI-Generated
                 </Badge>
               </div>
