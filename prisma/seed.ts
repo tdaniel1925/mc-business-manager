@@ -17,7 +17,7 @@ const randomBetween = (min: number, max: number) =>
 const randomDate = (start: Date, end: Date) =>
   new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 
-const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+const randomElement = <T>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
 // Business name generators
 const businessPrefixes = ["ABC", "Premier", "Golden", "Elite", "Metro", "City", "American", "National", "First", "Best"];
