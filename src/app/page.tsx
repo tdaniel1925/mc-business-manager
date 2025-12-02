@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import {
   Building2,
   ClipboardCheck,
@@ -96,14 +94,7 @@ const stats = [
   { value: "24/7", label: "Support" },
 ];
 
-export default async function LandingPage() {
-  const session = await auth();
-
-  // If logged in, redirect to dashboard
-  if (session) {
-    redirect("/dashboard");
-  }
-
+export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
       {/* Navigation */}
