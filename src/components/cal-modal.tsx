@@ -20,21 +20,21 @@ export function CalModal({ isOpen, onClose }: CalModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-3xl h-[85vh] bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-full transition-colors border border-gray-600"
           aria-label="Close"
         >
           <svg
-            className="w-5 h-5 text-gray-600"
+            className="w-4 h-4 text-gray-300"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -51,8 +51,8 @@ export function CalModal({ isOpen, onClose }: CalModalProps) {
           <Cal
             namespace="30min"
             calLink="botmakers/30min"
-            style={{ width: "100%", height: "100%", overflow: "scroll" }}
-            config={{ layout: "month_view" }}
+            style={{ width: "100%", height: "100%", overflow: "auto" }}
+            config={{ layout: "month_view", theme: "dark" }}
           />
         </div>
       </div>
