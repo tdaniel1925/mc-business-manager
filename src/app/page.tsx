@@ -88,10 +88,10 @@ const benefits = [
 ];
 
 const stats = [
-  { value: "$2B+", label: "Deals Processed" },
-  { value: "10,000+", label: "Merchants Funded" },
-  { value: "99.9%", label: "Uptime SLA" },
-  { value: "24/7", label: "Support" },
+  { value: "55+", label: "Database Models" },
+  { value: "30+", label: "Dashboard Pages" },
+  { value: "10", label: "Pipeline Stages" },
+  { value: "8", label: "User Roles" },
 ];
 
 export default function LandingPage() {
