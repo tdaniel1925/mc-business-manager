@@ -46,6 +46,8 @@ const stages: { id: DealStage; label: string; color: string }[] = [
 export default function PipelinePage() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [draggedDeal, setDraggedDeal] = useState<string | null>(null);
+  const [draggedOverStage, setDraggedOverStage] = useState<DealStage | null>(null);
 
   useEffect(() => {
     fetchDeals();
@@ -65,14 +67,27 @@ export default function PipelinePage() {
 
   async function updateDealStage(dealId: string, newStage: DealStage) {
     try {
-      await fetch(`/api/deals/${dealId}`, {
+      // Optimistically update UI
+      setDeals((prevDeals) =>
+        prevDeals.map((deal) =>
+          deal.id === dealId ? { ...deal, stage: newStage } : deal
+        )
+      );
+
+      const res = await fetch(`/api/deals/${dealId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stage: newStage }),
       });
-      fetchDeals();
+
+      if (!res.ok) {
+        // Revert on error
+        fetchDeals();
+      }
     } catch (error) {
       console.error("Failed to update deal:", error);
+      // Revert on error
+      fetchDeals();
     }
   }
 
@@ -85,6 +100,42 @@ export default function PipelinePage() {
       (sum, deal) => sum + parseFloat(deal.requestedAmount),
       0
     );
+  };
+
+  // Drag handlers
+  const handleDragStart = (e: React.DragEvent, dealId: string) => {
+    setDraggedDeal(dealId);
+    e.dataTransfer.effectAllowed = "move";
+    // Add a subtle opacity to the dragged element
+    (e.target as HTMLElement).style.opacity = "0.5";
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    (e.target as HTMLElement).style.opacity = "1";
+    setDraggedDeal(null);
+    setDraggedOverStage(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, stageId: DealStage) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDraggedOverStage(stageId);
+  };
+
+  const handleDragLeave = () => {
+    setDraggedOverStage(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, newStage: DealStage) => {
+    e.preventDefault();
+    if (draggedDeal) {
+      const deal = deals.find((d) => d.id === draggedDeal);
+      if (deal && deal.stage !== newStage) {
+        updateDealStage(draggedDeal, newStage);
+      }
+    }
+    setDraggedDeal(null);
+    setDraggedOverStage(null);
   };
 
   return (
@@ -107,11 +158,19 @@ export default function PipelinePage() {
           {stages.map((stage) => {
             const stageDeals = getDealsByStage(stage.id);
             const total = getStageTotal(stage.id);
+            const isDropTarget = draggedOverStage === stage.id;
 
             return (
               <div
                 key={stage.id}
-                className="w-72 flex flex-col bg-gray-100 rounded-lg"
+                className={`w-72 flex flex-col rounded-lg transition-all ${
+                  isDropTarget
+                    ? "bg-blue-50 ring-2 ring-blue-400"
+                    : "bg-gray-100"
+                }`}
+                onDragOver={(e) => handleDragOver(e, stage.id)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, stage.id)}
               >
                 {/* Column Header */}
                 <div className="p-3 border-b border-gray-200">
@@ -128,31 +187,40 @@ export default function PipelinePage() {
                 </div>
 
                 {/* Deals List */}
-                <div className="flex-1 p-2 space-y-2 overflow-y-auto">
+                <div className="flex-1 p-2 space-y-2 overflow-y-auto min-h-[200px]">
                   {loading ? (
                     <div className="text-center py-4 text-gray-400">
                       Loading...
                     </div>
                   ) : stageDeals.length === 0 ? (
                     <div className="text-center py-8 text-gray-400 text-sm">
-                      No deals in this stage
+                      {isDropTarget ? "Drop here" : "No deals in this stage"}
                     </div>
                   ) : (
                     stageDeals.map((deal) => (
-                      <Link
+                      <div
                         key={deal.id}
-                        href={`/deals/${deal.id}`}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, deal.id)}
+                        onDragEnd={handleDragEnd}
+                        className={`cursor-move ${
+                          draggedDeal === deal.id ? "opacity-50" : ""
+                        }`}
                       >
-                        <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                        <Card className="hover:shadow-md transition-shadow">
                           <CardContent className="p-3">
                             <div className="flex items-start gap-2">
                               <GripVertical className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                   <Building2 className="w-4 h-4 text-gray-400" />
-                                  <p className="font-medium text-gray-900 truncate text-sm">
+                                  <Link
+                                    href={`/deals/${deal.id}`}
+                                    className="font-medium text-gray-900 truncate text-sm hover:text-blue-600"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
                                     {deal.merchant.legalName}
-                                  </p>
+                                  </Link>
                                 </div>
                                 {deal.merchant.dbaName && (
                                   <p className="text-xs text-gray-500 truncate mb-2">
@@ -171,7 +239,7 @@ export default function PipelinePage() {
                             </div>
                           </CardContent>
                         </Card>
-                      </Link>
+                      </div>
                     ))
                   )}
                 </div>
