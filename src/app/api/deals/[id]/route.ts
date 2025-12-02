@@ -37,6 +37,16 @@ export async function GET(
         merchant: {
           include: {
             owners: true,
+            uccFilings: {
+              select: {
+                id: true,
+                filingNumber: true,
+                filingType: true,
+                filingState: true,
+                status: true,
+                filedAt: true,
+              },
+            },
           },
         },
         underwriter: {

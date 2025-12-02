@@ -15,7 +15,7 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui";
-import { Eye, ClipboardCheck, AlertTriangle, Clock } from "lucide-react";
+import { Eye, ClipboardCheck, AlertTriangle, Clock, Calculator, Shield } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -194,11 +194,11 @@ export default async function UnderwritingPage() {
                     <TableHead>Amount</TableHead>
                     <TableHead>FICO</TableHead>
                     <TableHead>Monthly Revenue</TableHead>
+                    <TableHead>Grade/Score</TableHead>
                     <TableHead>Documents</TableHead>
                     <TableHead>Bank Analysis</TableHead>
-                    <TableHead>Stage</TableHead>
                     <TableHead>Assigned To</TableHead>
-                    <TableHead></TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -244,6 +244,32 @@ export default async function UnderwritingPage() {
                             : "-"}
                         </TableCell>
                         <TableCell>
+                          {deal.paperGrade ? (
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant={
+                                  deal.paperGrade === "A"
+                                    ? "success"
+                                    : deal.paperGrade === "B"
+                                    ? "info"
+                                    : deal.paperGrade === "C"
+                                    ? "warning"
+                                    : "danger"
+                                }
+                              >
+                                {deal.paperGrade}
+                              </Badge>
+                              {deal.riskScore !== null && (
+                                <span className="text-sm text-gray-500">
+                                  {deal.riskScore}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
                           <Badge variant={docStatus.color}>
                             {deal.documents.length} docs ({docStatus.status})
                           </Badge>
@@ -256,28 +282,25 @@ export default async function UnderwritingPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant={
-                              deal.stage === "IN_UNDERWRITING"
-                                ? "purple"
-                                : "info"
-                            }
-                          >
-                            {deal.stage.replace(/_/g, " ")}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
                           {deal.underwriter?.name || (
                             <span className="text-gray-400">Unassigned</span>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Link href={`/deals/${deal.id}`}>
-                            <Button size="sm">
-                              <Eye className="w-4 h-4 mr-1" />
-                              Review
-                            </Button>
-                          </Link>
+                          <div className="flex gap-2">
+                            <Link href={`/underwriting/${deal.id}`}>
+                              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                                <Calculator className="w-4 h-4 mr-1" />
+                                Analyze
+                              </Button>
+                            </Link>
+                            <Link href={`/deals/${deal.id}`}>
+                              <Button size="sm" variant="outline">
+                                <Eye className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                            </Link>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
@@ -304,6 +327,7 @@ export default async function UnderwritingPage() {
                   <TableRow>
                     <TableHead>Merchant</TableHead>
                     <TableHead>Amount</TableHead>
+                    <TableHead>Grade</TableHead>
                     <TableHead>Decision</TableHead>
                     <TableHead>Underwriter</TableHead>
                     <TableHead>Date</TableHead>
@@ -318,6 +342,25 @@ export default async function UnderwritingPage() {
                       </TableCell>
                       <TableCell>
                         {formatCurrency(Number(deal.requestedAmount))}
+                      </TableCell>
+                      <TableCell>
+                        {deal.paperGrade ? (
+                          <Badge
+                            variant={
+                              deal.paperGrade === "A"
+                                ? "success"
+                                : deal.paperGrade === "B"
+                                ? "info"
+                                : deal.paperGrade === "C"
+                                ? "warning"
+                                : "danger"
+                            }
+                          >
+                            {deal.paperGrade}
+                          </Badge>
+                        ) : (
+                          "-"
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge
