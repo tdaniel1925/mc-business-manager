@@ -320,6 +320,154 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Integrations Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-900/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Seamless Integrations
+            </h2>
+            <p className="text-xl text-gray-400">
+              Connect with the tools you already use
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8 items-center justify-items-center">
+            {/* HubSpot */}
+            <div className="group relative">
+              <img
+                src="https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png"
+                alt="HubSpot"
+                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+              />
+            </div>
+
+            {/* Salesforce */}
+            <div className="group relative">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Salesforce.com_logo.svg"
+                alt="Salesforce"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+              />
+            </div>
+
+            {/* Zapier */}
+            <div className="group relative">
+              <img
+                src="https://cdn.zapier.com/storage/services/6cf3f5a461feadfba7abc93c4c395b33.png"
+                alt="Zapier"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Make */}
+            <div className="group relative">
+              <img
+                src="https://www.make.com/en/integrations/_next/image?url=%2Fen%2Fintegrations%2F_assets%2Fmake%2Fmake.png&w=128&q=75"
+                alt="Make"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* n8n */}
+            <div className="group relative">
+              <img
+                src="https://n8n.io/favicon.svg"
+                alt="n8n"
+                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* GoHighLevel */}
+            <div className="group relative">
+              <img
+                src="https://assets-global.website-files.com/5fac11c3554384e2baf6481c/64be4db07131a70e7c19e560_GHL%20LOGO.svg"
+                alt="GoHighLevel"
+                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+              />
+            </div>
+
+            {/* Mailchimp */}
+            <div className="group relative">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/8/80/Mailchimp-freddie-wink.svg"
+                alt="Mailchimp"
+                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Vapi */}
+            <div className="group relative">
+              <img
+                src="https://vapi.ai/favicon.svg"
+                alt="Vapi"
+                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Twilio */}
+            <div className="group relative">
+              <img
+                src="https://www.twilio.com/content/dam/twilio-com/global/en/blog/legacy/2015/twilio-logo-red_0/twilio-logo-red.png"
+                alt="Twilio"
+                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Notion */}
+            <div className="group relative">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png"
+                alt="Notion"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Slack */}
+            <div className="group relative">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg"
+                alt="Slack"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Discord */}
+            <div className="group relative">
+              <img
+                src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png"
+                alt="Discord"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* WordPress */}
+            <div className="group relative">
+              <img
+                src="https://s.w.org/style/images/about/WordPress-logotype-standard-white.png"
+                alt="WordPress"
+                className="h-6 w-auto opacity-60 hover:opacity-100 transition-opacity"
+              />
+            </div>
+
+            {/* Stripe */}
+            <div className="group relative">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                alt="Stripe"
+                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+              />
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-gray-400 text-sm">
+              Plus dozens more integrations through our REST API and webhooks
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
