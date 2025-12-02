@@ -1,6 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from "@/components/ui";
-import { ArrowLeft, Mail, Phone, Building2, DollarSign, Calendar, User } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Building2, DollarSign, Calendar, User, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { formatDate, formatCurrency } from "@/lib/utils";
@@ -8,11 +8,11 @@ import { notFound } from "next/navigation";
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const lead = await prisma.lead.findUnique({
+  const lead = await prisma.marketingLead.findUnique({
     where: { id },
     include: {
-      assignedTo: {
-        select: { id: true, name: true, email: true },
+      campaign: {
+        select: { id: true, name: true },
       },
     },
   });
@@ -58,7 +58,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="flex flex-col h-full">
       <Header
-        title={`${lead.firstName} ${lead.lastName}`}
+        title={lead.businessName || lead.contactName || "Marketing Lead"}
         subtitle="Lead details and information"
         action={
           <Link href="/marketing/leads">
@@ -79,35 +79,47 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Name</p>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-gray-400" />
-                    <p className="font-medium">
-                      {lead.firstName} {lead.lastName}
-                    </p>
+                {lead.businessName && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Business Name</p>
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-gray-400" />
+                      <p className="font-medium">{lead.businessName}</p>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {lead.contactName && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Contact Name</p>
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4 text-gray-400" />
+                      <p className="font-medium">{lead.contactName}</p>
+                    </div>
+                  </div>
+                )}
 
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Status</p>
-                  <Badge variant={getStatusVariant(lead.status)}>
-                    {lead.status}
+                  <p className="text-sm text-gray-500 mb-1">Qualification Status</p>
+                  <Badge variant={getStatusVariant(lead.qualificationStatus)}>
+                    {lead.qualificationStatus}
                   </Badge>
                 </div>
 
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Email</p>
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-gray-400" />
-                    <a
-                      href={`mailto:${lead.email}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {lead.email}
-                    </a>
+                {lead.email && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Email</p>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-gray-400" />
+                      <a
+                        href={`mailto:${lead.email}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {lead.email}
+                      </a>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {lead.phone && (
                   <div>
@@ -124,23 +136,6 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   </div>
                 )}
 
-                {lead.company && (
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Company</p>
-                    <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-gray-400" />
-                      <p className="font-medium">{lead.company}</p>
-                    </div>
-                  </div>
-                )}
-
-                {lead.title && (
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Job Title</p>
-                    <p className="font-medium">{lead.title}</p>
-                  </div>
-                )}
-
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Lead Source</p>
                   <Badge variant={getSourceVariant(lead.source)}>
@@ -148,15 +143,20 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                   </Badge>
                 </div>
 
-                {lead.estimatedValue && (
+                {lead.leadScore > 0 && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Estimated Value</p>
+                    <p className="text-sm text-gray-500 mb-1">Lead Score</p>
                     <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-gray-400" />
-                      <p className="font-semibold text-green-600">
-                        {formatCurrency(Number(lead.estimatedValue))}
-                      </p>
+                      <TrendingUp className="w-4 h-4 text-gray-400" />
+                      <p className="font-semibold text-green-600">{lead.leadScore}/100</p>
                     </div>
+                  </div>
+                )}
+
+                {lead.industry && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Industry</p>
+                    <p className="font-medium">{lead.industry}</p>
                   </div>
                 )}
               </div>
@@ -168,14 +168,12 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 </div>
               )}
 
-              {lead.assignedTo && (
+              {lead.campaign && (
                 <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-500 mb-1">Assigned To</p>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium">{lead.assignedTo.name}</span>
-                    <span className="text-sm text-gray-500">({lead.assignedTo.email})</span>
-                  </div>
+                  <p className="text-sm text-gray-500 mb-1">Campaign</p>
+                  <Link href={`/marketing/campaigns/${lead.campaign.id}`} className="font-medium text-blue-600 hover:underline">
+                    {lead.campaign.name}
+                  </Link>
                 </div>
               )}
 
@@ -222,7 +220,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               </CardContent>
             </Card>
 
-            {lead.status === "QUALIFIED" && (
+            {lead.qualificationStatus === "QUALIFIED" && (
               <Card>
                 <CardHeader>
                   <CardTitle>Convert to Deal</CardTitle>

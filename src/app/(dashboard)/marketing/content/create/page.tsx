@@ -86,17 +86,18 @@ export default function CreateContentPage() {
                     id="type"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    options={[
+                      { value: "BLOG_POST", label: "Blog Post" },
+                      { value: "CASE_STUDY", label: "Case Study" },
+                      { value: "WHITE_PAPER", label: "White Paper" },
+                      { value: "EBOOK", label: "eBook" },
+                      { value: "VIDEO", label: "Video" },
+                      { value: "INFOGRAPHIC", label: "Infographic" },
+                      { value: "NEWSLETTER", label: "Newsletter" },
+                      { value: "SOCIAL_POST", label: "Social Media Post" },
+                    ]}
                     required
-                  >
-                    <option value="BLOG_POST">Blog Post</option>
-                    <option value="CASE_STUDY">Case Study</option>
-                    <option value="WHITE_PAPER">White Paper</option>
-                    <option value="EBOOK">eBook</option>
-                    <option value="VIDEO">Video</option>
-                    <option value="INFOGRAPHIC">Infographic</option>
-                    <option value="NEWSLETTER">Newsletter</option>
-                    <option value="SOCIAL_POST">Social Media Post</option>
-                  </Select>
+                  />
                 </div>
 
                 <div>
@@ -105,14 +106,15 @@ export default function CreateContentPage() {
                     id="status"
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    options={[
+                      { value: "DRAFT", label: "Draft" },
+                      { value: "REVIEW", label: "In Review" },
+                      { value: "SCHEDULED", label: "Scheduled" },
+                      { value: "PUBLISHED", label: "Published" },
+                      { value: "ARCHIVED", label: "Archived" },
+                    ]}
                     required
-                  >
-                    <option value="DRAFT">Draft</option>
-                    <option value="REVIEW">In Review</option>
-                    <option value="SCHEDULED">Scheduled</option>
-                    <option value="PUBLISHED">Published</option>
-                    <option value="ARCHIVED">Archived</option>
-                  </Select>
+                  />
                 </div>
 
                 <div className="md:col-span-2">
