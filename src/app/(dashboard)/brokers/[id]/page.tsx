@@ -6,9 +6,10 @@ import prisma from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
-export default async function BrokerDetailPage({ params }: { params: { id: string } }) {
+export default async function BrokerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const broker = await prisma.broker.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       deals: {
         include: {

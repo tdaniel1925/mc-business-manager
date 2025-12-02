@@ -6,9 +6,10 @@ import prisma from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
-export default async function VoiceCampaignDetailPage({ params }: { params: { id: string } }) {
+export default async function VoiceCampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const campaign = await prisma.voiceCampaign.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       calls: {
         orderBy: { createdAt: "desc" },

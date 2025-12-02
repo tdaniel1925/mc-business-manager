@@ -6,9 +6,10 @@ import prisma from "@/lib/prisma";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
-export default async function AdCampaignDetailPage({ params }: { params: { id: string } }) {
+export default async function AdCampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const campaign = await prisma.adCampaign.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!campaign) {

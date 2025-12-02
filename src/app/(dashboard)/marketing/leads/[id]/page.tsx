@@ -6,9 +6,10 @@ import prisma from "@/lib/prisma";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
-export default async function LeadDetailPage({ params }: { params: { id: string } }) {
+export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const lead = await prisma.lead.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       assignedTo: {
         select: { id: true, name: true, email: true },

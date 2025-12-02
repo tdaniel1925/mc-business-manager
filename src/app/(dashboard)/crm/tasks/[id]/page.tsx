@@ -6,9 +6,10 @@ import prisma from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
-export default async function TaskDetailPage({ params }: { params: { id: string } }) {
+export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const task = await prisma.task.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       assignedTo: {
         select: { id: true, name: true, email: true },

@@ -6,9 +6,10 @@ import prisma from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
 
-export default async function ContentDetailPage({ params }: { params: { id: string } }) {
+export default async function ContentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const content = await prisma.content.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       author: {
         select: { id: true, name: true, email: true },
