@@ -62,7 +62,7 @@ async function getDialerData() {
   ).length;
 
   const connectedCalls = callLogs.filter(
-    (call) => call.outcome === "CONNECTED"
+    (call) => call.status === "COMPLETED" || call.status === "IN_PROGRESS"
   ).length;
 
   const totalDuration = callLogs.reduce(
@@ -414,14 +414,16 @@ export default async function DialerPage() {
                         <TableCell>
                           <Badge
                             variant={
-                              call.outcome === "CONNECTED"
+                              call.outcome === "QUALIFIED" || call.outcome === "INTERESTED"
                                 ? "success"
-                                : call.outcome === "NO_ANSWER"
+                                : call.outcome === "CALLBACK_REQUESTED" || call.outcome === "VOICEMAIL_LEFT"
                                 ? "warning"
-                                : "danger"
+                                : call.outcome === "NOT_INTERESTED" || call.outcome === "DISQUALIFIED"
+                                ? "danger"
+                                : "default"
                             }
                           >
-                            {call.outcome.replace(/_/g, " ")}
+                            {call.outcome ? call.outcome.replace(/_/g, " ") : "N/A"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm">
