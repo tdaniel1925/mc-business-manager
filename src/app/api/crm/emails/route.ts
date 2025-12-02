@@ -79,21 +79,26 @@ export async function POST(request: NextRequest) {
       direction,
       contactId,
       dealId,
+      companyId,
     } = body;
 
-    if (!subject) {
+    if (!subject || !toEmail || !fromEmail) {
       return NextResponse.json(
-        { error: "Subject is required" },
+        { error: "Subject, toEmail, and fromEmail are required" },
         { status: 400 }
       );
     }
 
+    // For now, use a default company ID - in production, this should come from the user's company
+    const tenantCompanyId = companyId || "default-company";
+
     const email = await prisma.emailMessage.create({
       data: {
+        companyId: tenantCompanyId,
         subject,
-        body: emailBody || null,
-        toEmail: toEmail || null,
-        fromEmail: fromEmail || null,
+        body: emailBody || "",
+        toEmail,
+        fromEmail,
         direction: direction || "OUTBOUND",
         status: "SENT",
         contactId: contactId || null,
@@ -102,7 +107,6 @@ export async function POST(request: NextRequest) {
       },
       include: {
         contact: true,
-        deal: true,
       },
     });
 

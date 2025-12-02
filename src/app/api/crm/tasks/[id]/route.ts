@@ -23,13 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       where: { id },
       include: {
         contact: true,
-        deal: {
-          include: {
-            merchant: true,
-          },
-        },
         assignedTo: true,
-        createdBy: true,
       },
     });
 
@@ -97,7 +91,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       data: updateData,
       include: {
         contact: true,
-        deal: true,
         assignedTo: true,
       },
     });

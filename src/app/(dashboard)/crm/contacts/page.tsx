@@ -26,17 +26,17 @@ interface ContactData {
   email: string | null;
   phone: string | null;
   mobile: string | null;
-  type: string;
-  company: string | null;
+  contactType: string;
+  businessName: string | null;
   title: string | null;
-  leadSource: string | null;
+  source: string | null;
   leadScore: number | null;
   status: string;
   createdAt: string;
   _count?: {
     activities: number;
     tasks: number;
-    dealContacts: number;
+    deals: number;
   };
 }
 
@@ -88,9 +88,9 @@ export default function ContactsPage() {
       `${contact.firstName} ${contact.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
       contact.email?.toLowerCase().includes(search.toLowerCase()) ||
       contact.phone?.includes(search) ||
-      contact.company?.toLowerCase().includes(search.toLowerCase());
+      contact.businessName?.toLowerCase().includes(search.toLowerCase());
 
-    const matchesType = typeFilter === "all" || contact.type === typeFilter;
+    const matchesType = typeFilter === "all" || contact.contactType === typeFilter;
 
     return matchesSearch && matchesType;
   });
@@ -171,12 +171,12 @@ export default function ContactsPage() {
             { label: "Total", count: contacts.length, color: "text-foreground" },
             {
               label: "Business Owners",
-              count: contacts.filter((c) => c.type === "BUSINESS_OWNER").length,
+              count: contacts.filter((c) => c.contactType === "BUSINESS_OWNER").length,
               color: "text-primary",
             },
             {
               label: "Brokers",
-              count: contacts.filter((c) => c.type === "BROKER").length,
+              count: contacts.filter((c) => c.contactType === "BROKER").length,
               color: "text-orange-500",
             },
             {
@@ -284,17 +284,17 @@ export default function ContactsPage() {
                         <td className="py-3 px-4">
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              contactTypeColors[contact.type] || "bg-gray-500/20 text-gray-500"
+                              contactTypeColors[contact.contactType] || "bg-gray-500/20 text-gray-500"
                             }`}
                           >
-                            {contact.type.replace(/_/g, " ")}
+                            {contact.contactType.replace(/_/g, " ")}
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          {contact.company ? (
+                          {contact.businessName ? (
                             <div className="flex items-center gap-2">
                               <Building2 className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm">{contact.company}</span>
+                              <span className="text-sm">{contact.businessName}</span>
                             </div>
                           ) : (
                             <span className="text-muted-foreground text-sm">-</span>

@@ -53,16 +53,6 @@ export async function GET(request: NextRequest) {
             lastName: true,
           },
         },
-        deal: {
-          select: {
-            id: true,
-            merchant: {
-              select: {
-                legalName: true,
-              },
-            },
-          },
-        },
         assignedTo: {
           select: {
             email: true,
@@ -103,6 +93,7 @@ export async function POST(request: NextRequest) {
       contactId,
       dealId,
       assignedToId,
+      companyId,
     } = body;
 
     if (!title || !category) {
@@ -112,8 +103,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // For now, use a default company ID - in production, this should come from the user's company
+    const tenantCompanyId = companyId || "default-company";
+
     const task = await prisma.crmTask.create({
       data: {
+        companyId: tenantCompanyId,
         title,
         description: description || null,
         category,
@@ -123,11 +118,9 @@ export async function POST(request: NextRequest) {
         contactId: contactId || null,
         dealId: dealId || null,
         assignedToId: assignedToId || user.id,
-        createdById: user.id,
       },
       include: {
         contact: true,
-        deal: true,
         assignedTo: true,
       },
     });

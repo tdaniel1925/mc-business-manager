@@ -32,12 +32,6 @@ interface ActivityData {
     firstName: string;
     lastName: string;
   } | null;
-  deal: {
-    id: string;
-    merchant: {
-      legalName: string;
-    } | null;
-  } | null;
   user: {
     email: string;
   } | null;
@@ -337,15 +331,6 @@ export default function ActivitiesPage() {
                                   <User className="w-3 h-3" />
                                   {activity.contact.firstName}{" "}
                                   {activity.contact.lastName}
-                                </Link>
-                              )}
-                              {activity.deal && (
-                                <Link
-                                  href={`/deals/${activity.deal.id}`}
-                                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
-                                >
-                                  <FileText className="w-3 h-3" />
-                                  {activity.deal.merchant?.legalName || "Deal"}
                                 </Link>
                               )}
                               {activity.duration && (

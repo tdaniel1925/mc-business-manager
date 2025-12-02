@@ -40,8 +40,8 @@ async function getCrmStats() {
     recentContacts,
   ] = await Promise.all([
     prisma.contact.count(),
-    prisma.contact.count({ where: { type: "BUSINESS_OWNER" } }),
-    prisma.contact.count({ where: { type: "BROKER" } }),
+    prisma.contact.count({ where: { contactType: "BUSINESS_OWNER" } }),
+    prisma.contact.count({ where: { contactType: "BROKER" } }),
     prisma.activity.count(),
     prisma.activity.findMany({
       take: 5,
@@ -435,7 +435,7 @@ export default async function CrmDashboardPage() {
                         {contact.firstName} {contact.lastName}
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
-                        {contact.type.replace(/_/g, " ")}
+                        {contact.contactType.replace(/_/g, " ")}
                       </p>
                     </div>
                   </Link>
