@@ -17,12 +17,6 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
       contact: {
         select: { id: true, firstName: true, lastName: true, email: true },
       },
-      deal: {
-        select: { id: true },
-        include: {
-          merchant: { select: { legalName: true } },
-        },
-      },
     },
   });
 
@@ -125,17 +119,19 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Type</p>
-                  <Badge variant="default">{task.type.replace(/_/g, " ")}</Badge>
+                  <p className="text-sm text-gray-500 mb-1">Category</p>
+                  <Badge variant="default">{task.category.replace(/_/g, " ")}</Badge>
                 </div>
 
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Due Date</p>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-400" />
-                    <span className="font-medium">{formatDate(task.dueDate)}</span>
+                {task.dueDate && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Due Date</p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span className="font-medium">{formatDate(task.dueDate)}</span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {task.assignedTo && (
@@ -183,18 +179,18 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               </Card>
             )}
 
-            {task.deal && (
+            {task.dealId && (
               <Card>
                 <CardHeader>
                   <CardTitle>Related Deal</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Link
-                    href={`/deals/${task.deal.id}`}
+                    href={`/deals/${task.dealId}`}
                     className="block hover:bg-gray-50 p-3 rounded-lg border"
                   >
-                    <p className="font-medium">{task.deal.merchant.legalName}</p>
-                    <p className="text-sm text-gray-500">View Deal Details</p>
+                    <p className="font-medium">View Deal Details</p>
+                    <p className="text-sm text-gray-500">Deal ID: {task.dealId.slice(0, 8)}...</p>
                   </Link>
                 </CardContent>
               </Card>
