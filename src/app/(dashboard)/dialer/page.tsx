@@ -48,9 +48,6 @@ async function getDialerData() {
       lead: {
         select: { id: true, contactName: true, businessName: true },
       },
-      contact: {
-        select: { id: true, firstName: true, lastName: true, company: true },
-      },
     },
     orderBy: { createdAt: "desc" },
     take: 50,
@@ -380,15 +377,9 @@ export default async function DialerPage() {
                 </TableHeader>
                 <TableBody>
                   {data.callLogs.map((call) => {
-                    const contact = call.lead || call.contact;
-                    const contactName = contact
-                      ? call.lead
-                        ? contact.contactName || "Unknown"
-                        : `${contact.firstName} ${contact.lastName}`
-                      : "Unknown";
-                    const company = call.lead
-                      ? contact?.businessName || ""
-                      : contact?.company || "";
+                    const lead = call.lead;
+                    const contactName = lead?.contactName || "Unknown";
+                    const company = lead?.businessName || "";
 
                     return (
                       <TableRow key={call.id}>
@@ -401,17 +392,17 @@ export default async function DialerPage() {
                           </div>
                         </TableCell>
                         <TableCell className="font-mono text-sm">
-                          {call.phoneNumber}
+                          {call.toNumber}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
-                            {call.direction === "INBOUND" ? (
+                            {call.callType === "INBOUND" ? (
                               <PhoneIncoming className="w-4 h-4 text-green-600" />
                             ) : (
                               <PhoneOutgoing className="w-4 h-4 text-blue-600" />
                             )}
                             <span className="text-sm capitalize">
-                              {call.direction.toLowerCase()}
+                              {call.callType.toLowerCase()}
                             </span>
                           </div>
                         </TableCell>
