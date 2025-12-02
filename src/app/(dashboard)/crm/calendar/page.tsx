@@ -179,7 +179,7 @@ export default function CalendarPage() {
       <Header
         title="Calendar"
         subtitle="View tasks and scheduled activities"
-        actions={
+        action={
           <div className="flex items-center gap-2">
             <Link href="/crm/tasks/new">
               <Button size="sm" variant="outline">

@@ -113,7 +113,7 @@ export default function ContactsPage() {
       <Header
         title="Contacts"
         subtitle="Manage all your CRM contacts"
-        actions={
+        action={
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm">
               <Upload className="w-4 h-4 mr-2" />

@@ -123,7 +123,7 @@ export default function NewTaskPage() {
       <Header
         title="Create Task"
         subtitle="Add a new CRM task"
-        actions={
+        action={
           <Link href="/crm/tasks">
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />

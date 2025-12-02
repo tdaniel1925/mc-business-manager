@@ -96,7 +96,7 @@ export default function EmailsPage() {
       <Header
         title="Email Tracking"
         subtitle="Track and manage email communications"
-        actions={
+        action={
           <Link href="/crm/emails/compose">
             <Button size="sm">
               <Plus className="w-4 h-4 mr-2" />

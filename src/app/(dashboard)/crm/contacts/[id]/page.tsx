@@ -101,7 +101,7 @@ export default async function ContactDetailPage({ params }: PageProps) {
       <Header
         title={`${contact.firstName} ${contact.lastName}`}
         subtitle={contact.company || contact.type.replace(/_/g, " ")}
-        actions={
+        action={
           <div className="flex items-center gap-2">
             <Link href="/crm/contacts">
               <Button variant="outline" size="sm">

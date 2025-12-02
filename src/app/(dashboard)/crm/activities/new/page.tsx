@@ -136,7 +136,7 @@ export default function NewActivityPage() {
       <Header
         title="Log Activity"
         subtitle="Record a new CRM activity"
-        actions={
+        action={
           <Link href="/crm/activities">
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />

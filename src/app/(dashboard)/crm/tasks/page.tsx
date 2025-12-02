@@ -171,7 +171,7 @@ export default function TasksPage() {
       <Header
         title="Tasks"
         subtitle="Manage CRM tasks and follow-ups"
-        actions={
+        action={
           <Link href="/crm/tasks/new">
             <Button size="sm">
               <Plus className="w-4 h-4 mr-2" />

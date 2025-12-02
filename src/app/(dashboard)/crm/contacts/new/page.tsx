@@ -107,7 +107,7 @@ export default function NewContactPage() {
       <Header
         title="New Contact"
         subtitle="Add a new contact to your CRM"
-        actions={
+        action={
           <div className="flex items-center gap-2">
             <Link href="/crm/contacts">
               <Button variant="outline" size="sm">

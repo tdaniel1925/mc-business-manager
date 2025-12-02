@@ -164,7 +164,7 @@ export default function ActivitiesPage() {
       <Header
         title="Activities"
         subtitle="Track all CRM activities and interactions"
-        actions={
+        action={
           <Link href="/crm/activities/new">
             <Button size="sm">
               <Plus className="w-4 h-4 mr-2" />
