@@ -10,6 +10,11 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
   const { id } = await params;
   const campaign = await prisma.adCampaign.findUnique({
     where: { id },
+    include: {
+      campaign: {
+        select: { name: true, type: true, startDate: true, endDate: true },
+      },
+    },
   });
 
   if (!campaign) {
@@ -64,7 +69,7 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
   return (
     <div className="flex flex-col h-full">
       <Header
-        title={campaign.name}
+        title={campaign.campaign.name}
         subtitle="Ad campaign details and performance"
         action={
           <Link href="/marketing/ads">
@@ -86,7 +91,7 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Campaign Name</p>
-                <p className="text-lg font-semibold">{campaign.name}</p>
+                <p className="text-lg font-semibold">{campaign.campaign.name}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -105,16 +110,16 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Ad Type</p>
-                  <Badge variant="default">{campaign.type}</Badge>
+                  <p className="text-sm text-gray-500 mb-1">Campaign Type</p>
+                  <Badge variant="default">{campaign.campaign.type}</Badge>
                 </div>
 
-                {campaign.budget && (
+                {campaign.totalBudget && (
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Total Budget</p>
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">{formatCurrency(Number(campaign.budget))}</span>
+                      <span className="font-medium">{formatCurrency(Number(campaign.totalBudget))}</span>
                     </div>
                   </div>
                 )}
@@ -139,53 +144,31 @@ export default async function AdCampaignDetailPage({ params }: { params: Promise
                   </div>
                 )}
 
-                {campaign.startDate && (
+                {campaign.campaign.startDate && (
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Start Date</p>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">{formatDate(campaign.startDate)}</span>
+                      <span className="font-medium">{formatDate(campaign.campaign.startDate)}</span>
                     </div>
                   </div>
                 )}
 
-                {campaign.endDate && (
+                {campaign.campaign.endDate && (
                   <div>
                     <p className="text-sm text-gray-500 mb-1">End Date</p>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">{formatDate(campaign.endDate)}</span>
+                      <span className="font-medium">{formatDate(campaign.campaign.endDate)}</span>
                     </div>
                   </div>
                 )}
               </div>
 
-              {campaign.targetAudience && (
+              {campaign.platformCampaignId && (
                 <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-500 mb-1">Target Audience</p>
-                  <p className="text-gray-700">{campaign.targetAudience}</p>
-                </div>
-              )}
-
-              {campaign.keywords && campaign.keywords.length > 0 && (
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-500 mb-2">Keywords</p>
-                  <div className="flex flex-wrap gap-2">
-                    {campaign.keywords.map((keyword, index) => (
-                      <Badge key={index} variant="default">
-                        {keyword}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {campaign.adCopy && (
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-500 mb-1">Ad Copy</p>
-                  <div className="p-4 bg-gray-50 rounded-lg border">
-                    <p className="text-sm whitespace-pre-wrap">{campaign.adCopy}</p>
-                  </div>
+                  <p className="text-sm text-gray-500 mb-1">Platform Campaign ID</p>
+                  <p className="text-gray-700 font-mono text-sm">{campaign.platformCampaignId}</p>
                 </div>
               )}
 

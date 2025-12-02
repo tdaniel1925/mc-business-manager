@@ -8,11 +8,11 @@ import { notFound } from "next/navigation";
 
 export default async function ContentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const content = await prisma.content.findUnique({
+  const content = await prisma.contentPost.findUnique({
     where: { id },
     include: {
-      author: {
-        select: { id: true, name: true, email: true },
+      campaign: {
+        select: { id: true, name: true },
       },
     },
   });
@@ -27,8 +27,6 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
         return "success";
       case "SCHEDULED":
         return "info";
-      case "REVIEW":
-        return "warning";
       case "DRAFT":
         return "default";
       case "ARCHIVED":
@@ -38,25 +36,10 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
     }
   };
 
-  const getTypeVariant = (type: string) => {
-    switch (type) {
-      case "BLOG_POST":
-        return "info";
-      case "CASE_STUDY":
-        return "success";
-      case "WHITE_PAPER":
-        return "warning";
-      case "VIDEO":
-        return "danger";
-      default:
-        return "default";
-    }
-  };
-
   return (
     <div className="flex flex-col h-full">
       <Header
-        title={content.title}
+        title={content.title || "Content Post"}
         subtitle="Content details and performance"
         action={
           <Link href="/marketing/content">
@@ -75,63 +58,72 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Content Information</CardTitle>
-                <div className="flex gap-2">
-                  <Badge variant={getStatusVariant(content.status)}>
-                    {content.status}
-                  </Badge>
-                  <Badge variant={getTypeVariant(content.type)}>
-                    {content.type.replace(/_/g, " ")}
-                  </Badge>
-                </div>
+                <Badge variant={getStatusVariant(content.status)}>
+                  {content.status}
+                </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Title</p>
-                <p className="text-lg font-semibold">{content.title}</p>
-              </div>
-
-              {content.excerpt && (
+              {content.title && (
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Excerpt</p>
-                  <p className="text-gray-700 italic">{content.excerpt}</p>
+                  <p className="text-sm text-gray-500 mb-1">Title</p>
+                  <p className="text-lg font-semibold">{content.title}</p>
                 </div>
               )}
 
               <div>
                 <p className="text-sm text-gray-500 mb-1">Content</p>
-                <div className="p-4 bg-gray-50 rounded-lg border">
+                <div className="p-4 bg-gray-50 rounded-lg border max-h-96 overflow-auto">
                   <p className="text-gray-800 whitespace-pre-wrap">{content.content}</p>
                 </div>
               </div>
 
-              {content.tags && content.tags.length > 0 && (
+              {content.platforms && content.platforms.length > 0 && (
                 <div>
-                  <p className="text-sm text-gray-500 mb-2">Tags</p>
+                  <p className="text-sm text-gray-500 mb-2">Target Platforms</p>
                   <div className="flex flex-wrap gap-2">
-                    {content.tags.map((tag, index) => (
-                      <Badge key={index} variant="default">
-                        {tag}
+                    {content.platforms.map((platform, index) => (
+                      <Badge key={index} variant="info">
+                        {platform}
                       </Badge>
                     ))}
                   </div>
                 </div>
               )}
 
+              {content.mediaType && (
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Media Type</p>
+                  <Badge variant="default">{content.mediaType}</Badge>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                {content.author && (
+                {content.campaign && (
                   <div>
-                    <p className="text-sm text-gray-500">Author</p>
-                    <p className="font-medium">{content.author.name}</p>
+                    <p className="text-sm text-gray-500">Campaign</p>
+                    <Link href={`/marketing/campaigns/${content.campaign.id}`} className="font-medium text-blue-600 hover:underline">
+                      {content.campaign.name}
+                    </Link>
                   </div>
                 )}
 
-                {content.publishDate && (
+                {content.publishedAt && (
                   <div>
-                    <p className="text-sm text-gray-500">Publish Date</p>
+                    <p className="text-sm text-gray-500">Published At</p>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
-                      <p className="font-medium">{formatDate(content.publishDate)}</p>
+                      <p className="font-medium">{formatDate(content.publishedAt)}</p>
+                    </div>
+                  </div>
+                )}
+
+                {content.scheduledAt && (
+                  <div>
+                    <p className="text-sm text-gray-500">Scheduled For</p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <p className="font-medium">{formatDate(content.scheduledAt)}</p>
                     </div>
                   </div>
                 )}
@@ -142,8 +134,10 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">Last Updated</p>
-                  <p className="font-medium">{formatDate(content.updatedAt)}</p>
+                  <p className="text-sm text-gray-500">AI Generated</p>
+                  <Badge variant={content.aiGenerated ? "info" : "default"}>
+                    {content.aiGenerated ? "Yes" : "No"}
+                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -158,8 +152,8 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
                     <Eye className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{content.views || 0}</p>
-                    <p className="text-sm text-gray-500">Views</p>
+                    <p className="text-2xl font-bold">{content.impressions}</p>
+                    <p className="text-sm text-gray-500">Impressions</p>
                   </div>
                 </div>
               </CardContent>
@@ -172,8 +166,8 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
                     <ThumbsUp className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{content.likes || 0}</p>
-                    <p className="text-sm text-gray-500">Likes</p>
+                    <p className="text-2xl font-bold">{content.engagements}</p>
+                    <p className="text-sm text-gray-500">Engagements</p>
                   </div>
                 </div>
               </CardContent>
@@ -186,30 +180,26 @@ export default async function ContentDetailPage({ params }: { params: Promise<{ 
                     <Share2 className="w-6 h-6 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{content.shares || 0}</p>
+                    <p className="text-2xl font-bold">{content.shares}</p>
                     <p className="text-sm text-gray-500">Shares</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {content.url && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Public URL</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <a
-                    href={content.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline text-sm break-all"
-                  >
-                    {content.url}
-                  </a>
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-orange-100 rounded-full">
+                    <Eye className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{content.clicks}</p>
+                    <p className="text-sm text-gray-500">Clicks</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

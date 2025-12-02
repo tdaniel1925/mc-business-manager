@@ -93,15 +93,16 @@ export default function NewAdCampaignPage() {
                     id="platform"
                     value={formData.platform}
                     onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
+                    options={[
+                      { value: "GOOGLE_ADS", label: "Google Ads" },
+                      { value: "FACEBOOK", label: "Facebook Ads" },
+                      { value: "LINKEDIN", label: "LinkedIn Ads" },
+                      { value: "TWITTER", label: "Twitter Ads" },
+                      { value: "INSTAGRAM", label: "Instagram Ads" },
+                      { value: "YOUTUBE", label: "YouTube Ads" },
+                    ]}
                     required
-                  >
-                    <option value="GOOGLE_ADS">Google Ads</option>
-                    <option value="FACEBOOK">Facebook Ads</option>
-                    <option value="LINKEDIN">LinkedIn Ads</option>
-                    <option value="TWITTER">Twitter Ads</option>
-                    <option value="INSTAGRAM">Instagram Ads</option>
-                    <option value="YOUTUBE">YouTube Ads</option>
-                  </Select>
+                  />
                 </div>
 
                 <div>
@@ -110,14 +111,15 @@ export default function NewAdCampaignPage() {
                     id="type"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    options={[
+                      { value: "SEARCH", label: "Search" },
+                      { value: "DISPLAY", label: "Display" },
+                      { value: "VIDEO", label: "Video" },
+                      { value: "SOCIAL", label: "Social" },
+                      { value: "REMARKETING", label: "Remarketing" },
+                    ]}
                     required
-                  >
-                    <option value="SEARCH">Search</option>
-                    <option value="DISPLAY">Display</option>
-                    <option value="VIDEO">Video</option>
-                    <option value="SOCIAL">Social</option>
-                    <option value="REMARKETING">Remarketing</option>
-                  </Select>
+                  />
                 </div>
 
                 <div>
@@ -126,14 +128,15 @@ export default function NewAdCampaignPage() {
                     id="status"
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    options={[
+                      { value: "DRAFT", label: "Draft" },
+                      { value: "SCHEDULED", label: "Scheduled" },
+                      { value: "ACTIVE", label: "Active" },
+                      { value: "PAUSED", label: "Paused" },
+                      { value: "COMPLETED", label: "Completed" },
+                    ]}
                     required
-                  >
-                    <option value="DRAFT">Draft</option>
-                    <option value="SCHEDULED">Scheduled</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="PAUSED">Paused</option>
-                    <option value="COMPLETED">Completed</option>
-                  </Select>
+                  />
                 </div>
 
                 <div>

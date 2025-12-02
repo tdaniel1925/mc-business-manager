@@ -1,6 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from "@/components/ui";
-import { ArrowLeft, Mail, Users, TrendingUp, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, Mail, Users, TrendingUp, Calendar, DollarSign, Eye, MousePointerClick } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { formatDate, formatCurrency } from "@/lib/utils";
@@ -11,12 +11,16 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
   const campaign = await prisma.campaign.findUnique({
     where: { id },
     include: {
-      emails: {
-        orderBy: { sentAt: "desc" },
+      leads: {
+        orderBy: { createdAt: "desc" },
         take: 10,
       },
+      adCampaigns: {
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      },
       _count: {
-        select: { emails: true },
+        select: { leads: true, adCampaigns: true, contentPosts: true },
       },
     },
   });
@@ -56,12 +60,12 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
   };
 
   // Calculate engagement metrics
-  const totalSent = campaign.emails.filter((e) => e.status === "SENT").length;
-  const totalOpened = campaign.emails.filter((e) => e.opened).length;
-  const totalClicked = campaign.emails.filter((e) => e.clicked).length;
-
-  const openRate = totalSent > 0 ? ((totalOpened / totalSent) * 100).toFixed(1) : "0.0";
-  const clickRate = totalSent > 0 ? ((totalClicked / totalSent) * 100).toFixed(1) : "0.0";
+  const ctr = campaign.impressions > 0
+    ? ((campaign.clicks / campaign.impressions) * 100).toFixed(1)
+    : "0.0";
+  const conversionRate = campaign.clicks > 0
+    ? ((campaign.conversions / campaign.clicks) * 100).toFixed(1)
+    : "0.0";
 
   return (
     <div className="flex flex-col h-full">
@@ -145,7 +149,11 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
 
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Target Audience</p>
-                  <span className="font-medium">{campaign.targetAudience || "All Contacts"}</span>
+                  <span className="font-medium">
+                    {campaign.targetAudience
+                      ? JSON.stringify(campaign.targetAudience)
+                      : "All Contacts"}
+                  </span>
                 </div>
               </div>
 
@@ -162,11 +170,11 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-blue-100 rounded-full">
-                    <Mail className="w-6 h-6 text-blue-600" />
+                    <Eye className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{campaign._count.emails}</p>
-                    <p className="text-sm text-gray-500">Total Emails</p>
+                    <p className="text-2xl font-bold">{campaign.impressions}</p>
+                    <p className="text-sm text-gray-500">Impressions</p>
                   </div>
                 </div>
               </CardContent>
@@ -176,11 +184,11 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-green-100 rounded-full">
-                    <Users className="w-6 h-6 text-green-600" />
+                    <MousePointerClick className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{openRate}%</p>
-                    <p className="text-sm text-gray-500">Open Rate</p>
+                    <p className="text-2xl font-bold">{campaign.clicks}</p>
+                    <p className="text-sm text-gray-500">Clicks ({ctr}% CTR)</p>
                   </div>
                 </div>
               </CardContent>
@@ -193,8 +201,22 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
                     <TrendingUp className="w-6 h-6 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{clickRate}%</p>
-                    <p className="text-sm text-gray-500">Click Rate</p>
+                    <p className="text-2xl font-bold">{campaign.conversions}</p>
+                    <p className="text-sm text-gray-500">Conversions ({conversionRate}%)</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-orange-100 rounded-full">
+                    <Users className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{campaign.leadsGenerated}</p>
+                    <p className="text-sm text-gray-500">Leads Generated</p>
                   </div>
                 </div>
               </CardContent>
@@ -202,36 +224,35 @@ export default async function CampaignDetailPage({ params }: { params: Promise<{
           </div>
         </div>
 
-        {/* Recent Emails */}
+        {/* Recent Leads */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Emails</CardTitle>
+            <CardTitle>Recent Leads</CardTitle>
           </CardHeader>
           <CardContent>
-            {campaign.emails.length === 0 ? (
-              <p className="text-center py-8 text-gray-500">No emails sent yet</p>
+            {campaign.leads.length === 0 ? (
+              <p className="text-center py-8 text-gray-500">No leads generated yet</p>
             ) : (
               <div className="space-y-3">
-                {campaign.emails.map((email) => (
+                {campaign.leads.map((lead) => (
                   <div
-                    key={email.id}
+                    key={lead.id}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
                   >
                     <div>
-                      <p className="font-medium">{email.subject}</p>
+                      <p className="font-medium">{lead.businessName || lead.contactName || "Unknown"}</p>
                       <p className="text-sm text-gray-500">
-                        {email.sentAt ? formatDate(email.sentAt) : "Not sent"}
+                        {formatDate(lead.createdAt)}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      {email.opened && (
-                        <Badge variant="success">Opened</Badge>
-                      )}
-                      {email.clicked && (
-                        <Badge variant="info">Clicked</Badge>
-                      )}
-                      <Badge variant={email.status === "SENT" ? "success" : "warning"}>
-                        {email.status}
+                      <Badge variant={
+                        lead.qualificationStatus === "CONVERTED" ? "success" :
+                        lead.qualificationStatus === "QUALIFIED" ? "info" :
+                        lead.qualificationStatus === "LOST" ? "danger" :
+                        "default"
+                      }>
+                        {lead.qualificationStatus}
                       </Badge>
                     </div>
                   </div>
