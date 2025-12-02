@@ -295,8 +295,8 @@ export default async function ContactDetailPage({ params }: PageProps) {
                             {dc.deal.merchant?.legalName || "Unknown Merchant"}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Role: {dc.role.replace(/_/g, " ")} | Status:{" "}
-                            {dc.deal.status}
+                            Role: {dc.role.replace(/_/g, " ")} | Stage:{" "}
+                            {dc.deal.stage.replace(/_/g, " ")}
                           </p>
                         </div>
                         <span className="text-sm font-medium">
