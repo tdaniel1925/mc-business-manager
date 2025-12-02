@@ -173,7 +173,7 @@ export default async function CollectionsPage() {
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                   <DollarSign className="w-6 h-6 text-blue-600" />
                 </div>
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                <Badge variant="info" className="bg-blue-50 text-blue-700 border-blue-200">
                   Outstanding
                 </Badge>
               </div>
@@ -195,7 +195,7 @@ export default async function CollectionsPage() {
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-green-600" />
                 </div>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge variant="success" className="bg-green-50 text-green-700 border-green-200">
                   {data.collectionRate.toFixed(1)}%
                 </Badge>
               </div>
@@ -217,7 +217,7 @@ export default async function CollectionsPage() {
                 <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                   <Clock className="w-6 h-6 text-yellow-600" />
                 </div>
-                <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                <Badge variant="warning" className="bg-yellow-50 text-yellow-700 border-yellow-200">
                   Next 7 Days
                 </Badge>
               </div>
@@ -418,7 +418,7 @@ export default async function CollectionsPage() {
                   <XCircle className="w-5 h-5" />
                   Failed Payments - Follow Up Required
                 </CardTitle>
-                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                <Badge variant="warning" className="bg-orange-50 text-orange-700 border-orange-200">
                   {data.failedPayments.length} Total
                 </Badge>
               </div>
@@ -501,7 +501,7 @@ export default async function CollectionsPage() {
                 <Calendar className="w-5 h-5 text-blue-600" />
                 Upcoming Payments (Next 7 Days)
               </CardTitle>
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              <Badge variant="info" className="bg-blue-50 text-blue-700 border-blue-200">
                 {formatCurrency(data.upcomingPayments.reduce((sum, p) => sum + Number(p.amount), 0))} Expected
               </Badge>
             </div>
