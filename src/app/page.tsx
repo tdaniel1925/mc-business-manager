@@ -336,25 +336,25 @@ export default function LandingPage() {
             {/* HubSpot */}
             <div className="group relative">
               <img
-                src="https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png"
+                src="https://cdn.worldvectorlogo.com/logos/hubspot-1.svg"
                 alt="HubSpot"
-                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
             </div>
 
             {/* Salesforce */}
             <div className="group relative">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Salesforce.com_logo.svg"
+                src="https://cdn.worldvectorlogo.com/logos/salesforce-2.svg"
                 alt="Salesforce"
-                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
             </div>
 
             {/* Zapier */}
             <div className="group relative">
               <img
-                src="https://cdn.zapier.com/storage/services/6cf3f5a461feadfba7abc93c4c395b33.png"
+                src="https://cdn.worldvectorlogo.com/logos/zapier-icon.svg"
                 alt="Zapier"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -363,7 +363,7 @@ export default function LandingPage() {
             {/* Make */}
             <div className="group relative">
               <img
-                src="https://www.make.com/en/integrations/_next/image?url=%2Fen%2Fintegrations%2F_assets%2Fmake%2Fmake.png&w=128&q=75"
+                src="https://cdn.worldvectorlogo.com/logos/make-2.svg"
                 alt="Make"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -372,7 +372,7 @@ export default function LandingPage() {
             {/* n8n */}
             <div className="group relative">
               <img
-                src="https://n8n.io/favicon.svg"
+                src="https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.svg"
                 alt="n8n"
                 className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -380,17 +380,15 @@ export default function LandingPage() {
 
             {/* GoHighLevel */}
             <div className="group relative">
-              <img
-                src="https://assets-global.website-files.com/5fac11c3554384e2baf6481c/64be4db07131a70e7c19e560_GHL%20LOGO.svg"
-                alt="GoHighLevel"
-                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
-              />
+              <div className="h-8 px-4 py-1 bg-white/10 rounded flex items-center opacity-60 hover:opacity-100 transition-opacity">
+                <span className="text-white font-semibold text-sm">GoHighLevel</span>
+              </div>
             </div>
 
             {/* Mailchimp */}
             <div className="group relative">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/8/80/Mailchimp-freddie-wink.svg"
+                src="https://cdn.worldvectorlogo.com/logos/mailchimp-freddie-icon.svg"
                 alt="Mailchimp"
                 className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -398,17 +396,15 @@ export default function LandingPage() {
 
             {/* Vapi */}
             <div className="group relative">
-              <img
-                src="https://vapi.ai/favicon.svg"
-                alt="Vapi"
-                className="h-12 w-auto opacity-60 hover:opacity-100 transition-opacity"
-              />
+              <div className="h-8 px-4 py-1 bg-white/10 rounded flex items-center opacity-60 hover:opacity-100 transition-opacity">
+                <span className="text-white font-semibold text-sm">Vapi</span>
+              </div>
             </div>
 
             {/* Twilio */}
             <div className="group relative">
               <img
-                src="https://www.twilio.com/content/dam/twilio-com/global/en/blog/legacy/2015/twilio-logo-red_0/twilio-logo-red.png"
+                src="https://cdn.worldvectorlogo.com/logos/twilio-1.svg"
                 alt="Twilio"
                 className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -417,7 +413,7 @@ export default function LandingPage() {
             {/* Notion */}
             <div className="group relative">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png"
+                src="https://cdn.worldvectorlogo.com/logos/notion-2.svg"
                 alt="Notion"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -426,7 +422,7 @@ export default function LandingPage() {
             {/* Slack */}
             <div className="group relative">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg"
+                src="https://cdn.worldvectorlogo.com/logos/slack-new-logo.svg"
                 alt="Slack"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -435,7 +431,7 @@ export default function LandingPage() {
             {/* Discord */}
             <div className="group relative">
               <img
-                src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png"
+                src="https://cdn.worldvectorlogo.com/logos/discord-6.svg"
                 alt="Discord"
                 className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
@@ -444,18 +440,18 @@ export default function LandingPage() {
             {/* WordPress */}
             <div className="group relative">
               <img
-                src="https://s.w.org/style/images/about/WordPress-logotype-standard-white.png"
+                src="https://cdn.worldvectorlogo.com/logos/wordpress-blue.svg"
                 alt="WordPress"
-                className="h-6 w-auto opacity-60 hover:opacity-100 transition-opacity"
+                className="h-10 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
             </div>
 
             {/* Stripe */}
             <div className="group relative">
               <img
-                src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                src="https://cdn.worldvectorlogo.com/logos/stripe-4.svg"
                 alt="Stripe"
-                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity filter brightness-0 invert"
+                className="h-8 w-auto opacity-60 hover:opacity-100 transition-opacity"
               />
             </div>
           </div>
